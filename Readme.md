@@ -1,7 +1,7 @@
 # Проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Дмитрий Жидков](https://up.htmlacademy.ru/ecmascript/13/user/1389573).
-* Наставник: `Неизвестно`.
+* Наставник: [Александр Бабченко](https://up.htmlacademy.ru/ecmascript/13/user/619357).
 
 ---
 
