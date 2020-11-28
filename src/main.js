@@ -9,8 +9,11 @@ import {createEventsListTemplate} from './view/events-list';
 import {createPointTemplate} from './view/point';
 import {createAddPointTemplate} from './view/add-point';
 import {createEditPointTemplate} from './view/edit-point';
+import {generatePoint} from './mock/point';
 
 const POINTS_QUANTITY = 3;
+
+const points = generatePoint();
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
