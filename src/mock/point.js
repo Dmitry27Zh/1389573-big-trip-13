@@ -1,18 +1,6 @@
 import dayjs from 'dayjs';
-
-const TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeng`, `Restaurant`];
-const NAMES = [`Amsterdam`, `Geneva`, `Chamonix`];
-const OFFERS = [`Add luggage`, `Switch to comfort class`, `Add meal`, `Choose seats`, `Travel by train`];
-
-const getRandomInteger = (a = 1, b = 0) => {
-  const min = Math.ceil(Math.min(a, b));
-  const max = Math.floor(Math.max(a, b));
-  return Math.floor(min + Math.random() * (max - min + 1));
-};
-
-const getRandomItem = (array) => {
-  return array[getRandomInteger(array.length - 1)];
-};
+import {TYPES, NAMES, OFFERS} from '../const';
+import {getRandomInteger, getRandomItem} from '../utils';;
 
 const generateDate = (date = dayjs()) => {
   const maxHoursGap = 24;
