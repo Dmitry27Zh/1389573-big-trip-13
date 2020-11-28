@@ -13,7 +13,8 @@ import {generatePoint} from './mock/point';
 
 const POINTS_QUANTITY = 3;
 
-const points = generatePoint();
+const points = new Array(POINTS_QUANTITY).fill().map(generatePoint);
+console.log(points);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -43,7 +44,7 @@ render(tripEventsElement, createEventsListTemplate(), `beforeEnd`);
 const tripEventsListElement = tripEventsElement.querySelector(`.trip-events__list`);
 
 for (let i = 0; i < POINTS_QUANTITY; i++) {
-  render(tripEventsListElement, createPointTemplate(), `beforeEnd`);
+  render(tripEventsListElement, createPointTemplate(points[i]), `beforeEnd`);
 }
 
 render(tripEventsListElement, createAddPointTemplate(), `afterBegin`);
