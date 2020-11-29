@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {TYPES, NAMES, OFFERS} from '../const';
+import {TYPES, NAMES} from '../const';
 import {getRandomInteger, getRandomItem} from '../utils';
 
 const generateDate = (date = dayjs()) => {

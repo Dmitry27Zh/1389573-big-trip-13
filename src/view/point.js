@@ -25,9 +25,9 @@ const createTimeTemplate = (start, end) => {
 
   return `
     <p class="event__time">
-      <time class="event__start-time" datetime="2019-03-18T10:30">${dayjs(start).format(`HH:mm`)}</time>
+      <time class="event__start-time" datetime="${dayjs(start).format(`YYYY-MM-DDTHH:mm`)}">${dayjs(start).format(`HH:mm`)}</time>
       &mdash;
-      <time class="event__end-time" datetime="2019-03-18T11:00">${dayjs(end).format(`HH:mm`)}</time>
+      <time class="event__end-time" datetime="${dayjs(end).format(`YYYY-MM-DDTHH:mm`)}">${dayjs(end).format(`HH:mm`)}</time>
     </p>
     <p class="event__duration">${getDuration()}</p>
   `;
@@ -38,7 +38,7 @@ export const createPointTemplate = (point) => {
   return `
     <li class="trip-events__item">
       <div class="event">
-        <time class="event__date" datetime="2019-03-18">${dayjs(start).format(`MMMD`)}</time>
+        <time class="event__date" datetime="${dayjs(start).format(`YYYY-MM-DD`)}">${dayjs(start).format(`MMMD`)}</time>
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
         </div>
