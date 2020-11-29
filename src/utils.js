@@ -17,7 +17,7 @@ const getRandomArray = (array) => {
     currentArray[i] = currentArray[randomIndex];
     currentArray[randomIndex] = temporaryValue;
   }
-  return currentArray.slice(0, getRandomInteger(1, currentArray.length - 1));
+  return currentArray.slice(0, getRandomInteger(1, 3));
 };
 
 export {getRandomInteger, getRandomItem, getRandomArray};

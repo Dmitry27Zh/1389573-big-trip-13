@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {TYPES, NAMES} from '../const';
+import {TYPES, DESTINATIONS} from '../const';
 import {getRandomInteger, getRandomItem, getRandomArray} from '../utils';
 
 const generateDate = (date = dayjs()) => {
@@ -31,21 +31,27 @@ const generateInfo = () => {
   };
 };
 
+const getInfoAndDestinationPairs = DESTINATIONS.map((destination) => {
+  return [destination, generateInfo()];
+});
+
+const generateInfoToDestination = () => Object.fromEntries(getInfoAndDestinationPairs);
+
 const generatePoint = (offerToType) => {
   const startDate = generateDate();
   const type = getRandomItem(TYPES);
+  const destination = getRandomItem(DESTINATIONS);
   return {
     type,
-    destination: getRandomItem(NAMES),
+    destination,
     date: {
       start: startDate,
       end: generateDate(startDate),
     },
     cost: getRandomInteger(100, 300),
-    offers: getRandomArray(offerToType[type]),
-    info: generateInfo(),
+    offers: getRandomArray(offerToType[type].map((el, index) => index)),
     isFavorite: Boolean(getRandomInteger(1)),
   };
 };
 
-export {generatePoint, generateOfferToType};
+export {generatePoint, generateOfferToType, generateInfoToDestination};

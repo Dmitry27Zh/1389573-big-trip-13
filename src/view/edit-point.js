@@ -12,22 +12,36 @@ const createEditEventTypesTemplate = (currentType) => {
 };
 
 const createOffersTemplate = (allOffers, appliedOffers) => {
-  return allOffers.map(({name, price}) => `
-    <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-${name}"
-      ${appliedOffers.some(({name: appliedName}) => appliedName === name) ? `checked` : ``}>
-      <label class="event__offer-label" for="event-offer-luggage-1">
+  console.log(allOffers, appliedOffers)
+  return allOffers.map(({name, price}, index) => `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}-${name}" type="checkbox" name="event-offer-${name}"
+      ${appliedOffers.some((appliedOffer) => appliedOffer === index) ? `checked` : ``}>
+      <label class="event__offer-label" for="event-offer-${index}-${name}">
         <span class="event__offer-title">${name}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>
       </label>
     </div>
-  `).join(``);
+    `).join(``);
 };
 
-export const createEditPointTemplate = (point, offersToType) => {
-  const {type, destination, date: {start, end}, cost, offers} = point;
+const createDestinationInfoTemplate = (destination, infoToDestination) => {
+  const {description, src} = infoToDestination[destination];
+  return `
+  <section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">${description}</p>
+    <div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${src.map((source) => `<img class="event__photo" src="${source}" alt="Event photo">`).join(``)}
+      </div>
+    </div>
+  </section>
+  `;
+};
 
+export const createEditPointTemplate = (point, offersToType, infoToDestination) => {
+  const {type, destination, date: {start, end}, cost, offers} = point;
   return `
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -86,15 +100,10 @@ export const createEditPointTemplate = (point, offersToType) => {
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-              ${createOffersTemplate(offers, offersToType[type])}
+              ${createOffersTemplate(offersToType[type], offers)}
             </div>
           </section>
-
-          <section class="event__section  event__section--destination">
-            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">Chamonix-Mont-Blanc (usually shortened to Chamonix) is a resort area near the junction of France, Switzerland and Italy. At the base of Mont Blanc, the highest summit in the Alps, it's renowned for its skiing.</p>
-          </section>
-        </section>
+          ${createDestinationInfoTemplate(destination, infoToDestination)}
       </form>
     </li>
   `;

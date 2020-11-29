@@ -11,10 +11,12 @@ import {createAddPointTemplate} from './view/add-point';
 import {createEditPointTemplate} from './view/edit-point';
 import {generatePoint} from './mock/point';
 import {generateOfferToType} from './mock/point';
+import {generateInfoToDestination} from './mock/point';
 
 const POINTS_QUANTITY = 15;
 
 const offerToType = generateOfferToType();
+const infoToDestination = generateInfoToDestination();
 const points = new Array(POINTS_QUANTITY).fill().map(() => generatePoint(offerToType));
 
 const render = (container, template, place) => {
@@ -45,8 +47,7 @@ render(tripEventsElement, createEventsListTemplate(), `beforeEnd`);
 const tripEventsListElement = tripEventsElement.querySelector(`.trip-events__list`);
 
 points.forEach((point) => {
-  render(tripEventsListElement, createPointTemplate(point), `beforeEnd`);
+  render(tripEventsListElement, createPointTemplate(point, offerToType), `beforeEnd`);
 });
 
-render(tripEventsListElement, createEditPointTemplate(points[0], offerToType), `afterBegin`);
-render(tripEventsListElement, createEditPointTemplate(points[1], offerToType), `beforeEnd`);
+render(tripEventsListElement, createEditPointTemplate(points[0], offerToType, infoToDestination), `afterBegin`);

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
-const createOfferTemplate = (offer) => {
-  const {name, price} = offer;
+const createOfferTemplate = (allOffers, offer) => {
+  const {name, price} = allOffers[offer];
   return `
     <li class="event__offer">
       <span class="event__offer-title">${name}</span>
@@ -33,7 +33,7 @@ const createTimeTemplate = (start, end) => {
   `;
 };
 
-export const createPointTemplate = (point) => {
+export const createPointTemplate = (point, offersToType) => {
   const {type, destination, date: {start, end}, cost, offers, isFavorite} = point;
   return `
     <li class="trip-events__item">
@@ -51,7 +51,7 @@ export const createPointTemplate = (point) => {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-            ${createOfferTemplate(offers[0])}
+            ${offers.map((offer) => createOfferTemplate(offersToType[type], offer)).join(``)}
         </ul>
         <button class="event__favorite-btn ${isFavorite ? `event__favorite-btn--active` : ``}" type="button">
           <span class="visually-hidden">Add to favorite</span>
