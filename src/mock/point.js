@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {TYPES, NAMES} from '../const';
-import {getRandomInteger, getRandomItem} from '../utils';
+import {getRandomInteger, getRandomItem, getRandomArray} from '../utils';
 
 const generateDate = (date = dayjs()) => {
   const maxHoursGap = 24;
@@ -18,10 +18,10 @@ const generateOffer = (type = `loaded`) => {
 };
 
 const getOfferAndTypePairs = TYPES.map((type) => {
-  return [type, generateOffer(type)];
+  return [type, new Array(getRandomInteger(4, 6)).fill().map(() => generateOffer(type))];
 });
 
-const offerToType = Object.fromEntries(getOfferAndTypePairs);
+const generateOfferToType = () => Object.fromEntries(getOfferAndTypePairs);
 
 const generateInfo = () => {
   const DESCRIPTION_TEMPLATE = (`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`).split(`. `);
@@ -31,18 +31,21 @@ const generateInfo = () => {
   };
 };
 
-export const generatePoint = () => {
+const generatePoint = (offerToType) => {
   const startDate = generateDate();
+  const type = getRandomItem(TYPES);
   return {
-    type: getRandomItem(TYPES),
+    type,
     destination: getRandomItem(NAMES),
     date: {
       start: startDate,
       end: generateDate(startDate),
     },
     cost: getRandomInteger(100, 300),
-    offers: new Array(getRandomInteger(1, 4)).fill().map(generateOffer),
+    offers: getRandomArray(offerToType[type]),
     info: generateInfo(),
     isFavorite: Boolean(getRandomInteger(1)),
   };
 };
+
+export {generatePoint, generateOfferToType};

@@ -10,10 +10,12 @@ import {createPointTemplate} from './view/point';
 import {createAddPointTemplate} from './view/add-point';
 import {createEditPointTemplate} from './view/edit-point';
 import {generatePoint} from './mock/point';
+import {generateOfferToType} from './mock/point';
 
 const POINTS_QUANTITY = 15;
 
-const points = new Array(POINTS_QUANTITY).fill().map(generatePoint);
+const offerToType = generateOfferToType();
+const points = new Array(POINTS_QUANTITY).fill().map(() => generatePoint(offerToType));
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -46,5 +48,5 @@ points.forEach((point) => {
   render(tripEventsListElement, createPointTemplate(point), `beforeEnd`);
 });
 
-render(tripEventsListElement, createAddPointTemplate(), `afterBegin`);
-render(tripEventsListElement, createEditPointTemplate(), `beforeEnd`);
+render(tripEventsListElement, createEditPointTemplate(points[0], offerToType), `afterBegin`);
+render(tripEventsListElement, createEditPointTemplate(points[1], offerToType), `beforeEnd`);
