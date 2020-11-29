@@ -12,7 +12,6 @@ const createEditEventTypesTemplate = (currentType) => {
 };
 
 const createOffersTemplate = (allOffers, appliedOffers) => {
-  console.log(allOffers, appliedOffers)
   return allOffers.map(({name, price}, index) => `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}-${name}" type="checkbox" name="event-offer-${name}"
       ${appliedOffers.some((appliedOffer) => appliedOffer === index) ? `checked` : ``}>

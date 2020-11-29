@@ -7,7 +7,6 @@ import {createFiltersTemplate} from './view/filters';
 import {createSortTemplate} from './view/sort';
 import {createEventsListTemplate} from './view/events-list';
 import {createPointTemplate} from './view/point';
-import {createAddPointTemplate} from './view/add-point';
 import {createEditPointTemplate} from './view/edit-point';
 import {generatePoint} from './mock/point';
 import {generateOfferToType} from './mock/point';
