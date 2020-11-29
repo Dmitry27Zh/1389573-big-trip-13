@@ -14,10 +14,13 @@ const createOfferTemplate = (offer) => {
 const createTimeTemplate = (start, end) => {
   const diff = dayjs(end).diff(dayjs(start), `m`);
   const getDuration = () => {
-    const days = Math.trunc(diff / (60 * 24)) || ``;
+    const days = Math.trunc(diff / (60 * 24));
     const hours = days ? (diff % (60 * 24)) / 60 : Math.trunc(diff / 60);
-    const minutes = hours ? diff % 60 : `00`;
-    return `${days ? `${days}D` : ``} ${hours ? `${hours}H` : ``} ${minutes}M`;
+    const minutes = hours ? diff % 60 : diff % (60 * 24);
+    const formatNumber = (number) => {
+      return number < 10 ? `0${number}` : number;
+    };
+    return `${days ? `${formatNumber(days)}D` : ``} ${!days && !hours ? `` : `${formatNumber(hours)}H`} ${formatNumber(minutes)}M`;
   };
 
   return `
