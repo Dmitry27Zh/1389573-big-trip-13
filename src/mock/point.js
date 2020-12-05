@@ -17,11 +17,11 @@ const generateOffer = (type = `loaded`) => {
   };
 };
 
-const getOfferAndTypePairs = TYPES.map((type) => {
+const generateOfferAndTypePairs = TYPES.map((type) => {
   return [type, new Array(getRandomInteger(4, 6)).fill().map(() => generateOffer(type))];
 });
 
-const generateOfferToType = () => Object.fromEntries(getOfferAndTypePairs);
+const generateOffersToTypes = () => Object.fromEntries(generateOfferAndTypePairs);
 
 const generateInfo = () => {
   const DESCRIPTION_TEMPLATE = (`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`).split(`. `);
@@ -31,13 +31,13 @@ const generateInfo = () => {
   };
 };
 
-const getInfoAndDestinationPairs = DESTINATIONS.map((destination) => {
+const generateInfoAndDestinationPairs = DESTINATIONS.map((destination) => {
   return [destination, generateInfo()];
 });
 
-const generateInfoToDestination = () => Object.fromEntries(getInfoAndDestinationPairs);
+const generateInfoToDestinations = () => Object.fromEntries(generateInfoAndDestinationPairs);
 
-const generatePoint = (offerToType) => {
+const generatePoint = (offersToTypes) => {
   const startDate = generateDate();
   const type = getRandomItem(TYPES);
   const destination = getRandomItem(DESTINATIONS);
@@ -49,9 +49,9 @@ const generatePoint = (offerToType) => {
       end: generateDate(startDate),
     },
     cost: getRandomInteger(100, 300),
-    offers: getRandomArray(offerToType[type].map((el, index) => index)),
+    offers: getRandomArray(offersToTypes[type].map((el, index) => index)),
     isFavorite: Boolean(getRandomInteger(1)),
   };
 };
 
-export {generatePoint, generateOfferToType, generateInfoToDestination};
+export {generatePoint, generateOffersToTypes, generateInfoToDestinations};

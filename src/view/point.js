@@ -33,7 +33,7 @@ const createTimeTemplate = (start, end) => {
   `;
 };
 
-export const createPointTemplate = (point, offersToType) => {
+export const createPointTemplate = (point, availableOffers) => {
   const {type, destination, date: {start, end}, cost, offers, isFavorite} = point;
   return `
     <li class="trip-events__item">
@@ -51,7 +51,7 @@ export const createPointTemplate = (point, offersToType) => {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-            ${offers.map((offer) => createOfferTemplate(offersToType[type], offer)).join(``)}
+            ${offers.map((offer) => createOfferTemplate(availableOffers, offer)).join(``)}
         </ul>
         <button class="event__favorite-btn ${isFavorite ? `event__favorite-btn--active` : ``}" type="button">
           <span class="visually-hidden">Add to favorite</span>

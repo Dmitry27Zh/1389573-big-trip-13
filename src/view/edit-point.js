@@ -11,21 +11,31 @@ const createEditEventTypesTemplate = (currentType) => {
   `).join(``);
 };
 
-const createOffersTemplate = (allOffers, appliedOffers) => {
-  return allOffers.map(({name, price}, index) => `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}-${name}" type="checkbox" name="event-offer-${name}"
-      ${appliedOffers.some((appliedOffer) => appliedOffer === index) ? `checked` : ``}>
-      <label class="event__offer-label" for="event-offer-${index}-${name}">
-        <span class="event__offer-title">${name}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${price}</span>
-      </label>
-    </div>
-    `).join(``);
+const isOfferApplied = (appliedOffers, index) => {
+  return appliedOffers.some((appliedOffer) => appliedOffer === index) ? `checked` : ``;
 };
 
-const createDestinationInfoTemplate = (destination, infoToDestination) => {
-  const {description, src} = infoToDestination[destination];
+const createOffersTemplate = (allOffers, appliedOffers) => {
+  return `
+  <section class="event__section  event__section--offers">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+    <div class="event__available-offers">
+    ${allOffers.map(({name, price}, index) => `<div class="event__offer-selector">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}-${name}" type="checkbox" name="event-offer-${name}"
+    ${appliedOffers ? isOfferApplied(appliedOffers, index) : ``}>
+    <label class="event__offer-label" for="event-offer-${index}-${name}">
+      <span class="event__offer-title">${name}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${price}</span>
+    </label>
+    </div>`).join(``)}
+    </div>
+  </section>
+  `;
+};
+
+const createDestinationInfoTemplate = (info) => {
+  const {description, src} = info;
   return `
   <section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -39,8 +49,8 @@ const createDestinationInfoTemplate = (destination, infoToDestination) => {
   `;
 };
 
-export const createEditPointTemplate = (point, offersToType, infoToDestination) => {
-  const {type, destination, date: {start, end}, cost, offers} = point;
+export const createEditPointTemplate = (offersToTypes, point = {}, info) => {
+  const {type = Object.keys(offersToTypes)[0], destination = ``, date = {start: ``, end: ``}, cost = ``, offers = ``} = point;
   return `
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -48,7 +58,7 @@ export const createEditPointTemplate = (point, offersToType, infoToDestination) 
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -74,10 +84,10 @@ export const createEditPointTemplate = (point, offersToType, infoToDestination) 
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(start).format(`DD/MM/YY HH:mm`)}">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${date.start ? dayjs(date.start).format(`DD/MM/YY HH:mm`) : `19/03/019 00:00`}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(end).format(`DD/MM/YY HH:mm`)}">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${date.end ? dayjs(date.end).format(`DD/MM/YY HH:mm`) : `19/03/19 00:00`}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -95,14 +105,8 @@ export const createEditPointTemplate = (point, offersToType, infoToDestination) 
           </button>
         </header>
         <section class="event__details">
-          <section class="event__section  event__section--offers">
-            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-            <div class="event__available-offers">
-              ${createOffersTemplate(offersToType[type], offers)}
-            </div>
-          </section>
-          ${createDestinationInfoTemplate(destination, infoToDestination)}
+          ${offersToTypes[type] ? createOffersTemplate(offersToTypes[type], offers) : ``}
+          ${info ? createDestinationInfoTemplate(info) : ``}
       </form>
     </li>
   `;
