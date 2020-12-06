@@ -22,7 +22,7 @@ const createOffersTemplate = (allOffers, appliedOffers) => {
     <div class="event__available-offers">
     ${allOffers.map(({name, price}, index) => `<div class="event__offer-selector">
     <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}-${name}" type="checkbox" name="event-offer-${name}"
-    ${appliedOffers && isOfferApplied(appliedOffers, index) ? `checked` : ``}>
+    ${isOfferApplied(appliedOffers, index) ? `checked` : ``}>
     <label class="event__offer-label" for="event-offer-${index}-${name}">
       <span class="event__offer-title">${name}</span>
       &plus;&euro;&nbsp;
@@ -50,7 +50,7 @@ const createDestinationInfoTemplate = (info) => {
 };
 
 export const createEditPointTemplate = (offersToTypes, point = {}, info) => {
-  const {type = Object.keys(offersToTypes)[0], destination = ``, date = {start: ``, end: ``}, cost = ``, offers = null} = point;
+  const {type = Object.keys(offersToTypes)[0], destination = ``, date = {start: ``, end: ``}, cost = ``, offers = []} = point;
   return `
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
