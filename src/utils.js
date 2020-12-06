@@ -1,4 +1,4 @@
-const getRandomInteger = (end = 1, start = 0) => {
+const getRandomInteger = (start = 0, end = 1) => {
   const min = Math.ceil(Math.min(end, start));
   const max = Math.floor(Math.max(end, start));
   return Math.floor(min + Math.random() * (max - min + 1));
