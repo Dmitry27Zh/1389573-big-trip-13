@@ -7,10 +7,10 @@ import {FiltersView} from './view/filters';
 import {SortView} from './view/sort';
 import {EventsListView} from './view/events-list';
 import {PointView} from './view/point';
-import {createEditPointTemplate} from './view/edit-point';
+import {EditPointView} from './view/edit-point';
 import {generatePoint} from './mock/point';
-import {generateOffersToTypes} from './mock/point';
-import {generateInfoToDestinations} from './mock/point';
+import {generateOffersToTypes} from './mock/offers-to-types';
+import {generateInfoToDestinations} from './mock/info-to-destinations';
 import {render} from './utils';
 import {RenderPositions} from './const';
 
@@ -22,6 +22,30 @@ const points = new Array(POINTS_QUANTITY).fill().map(() => generatePoint(offersT
 
 
 const tripMainElement = document.querySelector(`.trip-main`);
+
+const renderPoint = (pointsListElement, point, availableOffers, info) => {
+  const pointComponent = new PointView(point, availableOffers);
+  const editPointComponent = new EditPointView(offersToTypes, point, info);
+
+  const replacePointToForm = () => pointsListElement.replaceChild(editPointComponent.getElement(), pointComponent.getElement());
+
+  const replaceFormToPoint = () => pointsListElement.replaceChild(pointComponent.getElement(), editPointComponent.getElement());
+
+  pointComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => replacePointToForm());
+  editPointComponent.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    replaceFormToPoint();
+  });
+  render(pointsListElement, pointComponent.getElement(), RenderPositions.BEFOREEND);
+};
+
+const renderEventsList = (eventsContainer, eventPoints) => {
+  render(eventsContainer, new SortView().getElement(), RenderPositions.BEFOREEND);
+  const eventsListComponent = new EventsListView();
+  render(eventsContainer, eventsListComponent.getElement(), RenderPositions.BEFOREEND);
+
+  eventPoints.forEach((eventPoint) => renderPoint(eventsListComponent.getElement(), eventPoint, offersToTypes[eventPoint.type], infoToDestinations[eventPoint.destination]));
+};
 
 const tripInfoComponent = new TripInfoView();
 render(tripMainElement, tripInfoComponent.getElement(), RenderPositions.AFTERBEGIN);
@@ -38,8 +62,5 @@ render(tripControlsElement, new MenuView().getElement(), RenderPositions.AFTERBE
 render(tripControlsElement, new FiltersView().getElement(), RenderPositions.BEFOREEND);
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-render(tripEventsElement, new SortView().getElement(), RenderPositions.BEFOREEND);
-const eventsListComponent = new EventsListView();
-render(tripEventsElement, eventsListComponent.getElement(), RenderPositions.BEFOREEND);
 
-points.forEach((point) => render(eventsListComponent.getElement(), new PointView(point, offersToTypes[point.type]).getElement(), RenderPositions.BEFOREEND));
+renderEventsList(tripEventsElement, points);
