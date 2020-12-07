@@ -7,10 +7,16 @@ import {createFiltersTemplate} from './view/filters';
 import {createSortTemplate} from './view/sort';
 import {createEventsListTemplate} from './view/events-list';
 import {createPointTemplate} from './view/point';
-import {createAddPointTemplate} from './view/add-point';
 import {createEditPointTemplate} from './view/edit-point';
+import {generatePoint} from './mock/point';
+import {generateOffersToTypes} from './mock/point';
+import {generateInfoToDestinations} from './mock/point';
 
-const POINTS_QUANTITY = 3;
+const POINTS_QUANTITY = 15;
+
+const offersToTypes = generateOffersToTypes();
+const infoToDestinations = generateInfoToDestinations();
+const points = new Array(POINTS_QUANTITY).fill().map(() => generatePoint(offersToTypes));
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -39,9 +45,9 @@ render(tripEventsElement, createEventsListTemplate(), `beforeEnd`);
 
 const tripEventsListElement = tripEventsElement.querySelector(`.trip-events__list`);
 
-for (let i = 0; i < POINTS_QUANTITY; i++) {
-  render(tripEventsListElement, createPointTemplate(), `beforeEnd`);
-}
+points.forEach((point) => {
+  render(tripEventsListElement, createPointTemplate(point, offersToTypes[point.type]), `beforeEnd`);
+});
 
-render(tripEventsListElement, createAddPointTemplate(), `afterBegin`);
-render(tripEventsListElement, createEditPointTemplate(), `beforeEnd`);
+render(tripEventsListElement, createEditPointTemplate(offersToTypes, points[0], infoToDestinations[points[0].destination]), `afterBegin`);
+render(tripEventsListElement, createEditPointTemplate(offersToTypes), `afterBegin`);
