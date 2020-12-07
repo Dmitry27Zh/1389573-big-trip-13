@@ -20,8 +20,19 @@ const offersToTypes = generateOffersToTypes();
 const infoToDestinations = generateInfoToDestinations();
 const points = new Array(POINTS_QUANTITY).fill().map(() => generatePoint(offersToTypes));
 
+const renderTripInfo = (tripInfoContainer) => {
+  const tripInfoComponent = new TripInfoView();
+  render(tripInfoContainer, tripInfoComponent.getElement(), RenderPositions.AFTERBEGIN);
+  const tripInfoMainElement = tripInfoComponent.getElement().querySelector(`.trip-info__main`);
+  render(tripInfoMainElement, new TripTitleView().getElement(), RenderPositions.AFTERBEGIN);
+  render(tripInfoMainElement, new TripDatesView().getElement(), RenderPositions.BEFOREEND);
+  render(tripInfoComponent.getElement(), new TripCostView().getElement(), RenderPositions.BEFOREEND);
+};
 
-const tripMainElement = document.querySelector(`.trip-main`);
+const renderTripControls = (tripControlsContainer) => {
+  render(tripControlsContainer, new MenuView().getElement(), RenderPositions.AFTERBEGIN);
+  render(tripControlsContainer, new FiltersView().getElement(), RenderPositions.BEFOREEND);
+};
 
 const renderPoint = (pointsListElement, point, availableOffers, info) => {
   const pointComponent = new PointView(point, availableOffers);
@@ -32,6 +43,7 @@ const renderPoint = (pointsListElement, point, availableOffers, info) => {
   const replaceFormToPoint = () => pointsListElement.replaceChild(pointComponent.getElement(), editPointComponent.getElement());
 
   pointComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => replacePointToForm());
+
   editPointComponent.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
     evt.preventDefault();
     replaceFormToPoint();
@@ -47,20 +59,11 @@ const renderEventsList = (eventsContainer, eventPoints) => {
   eventPoints.forEach((eventPoint) => renderPoint(eventsListComponent.getElement(), eventPoint, offersToTypes[eventPoint.type], infoToDestinations[eventPoint.destination]));
 };
 
-const tripInfoComponent = new TripInfoView();
-render(tripMainElement, tripInfoComponent.getElement(), RenderPositions.AFTERBEGIN);
 
-const tripInfoMainElement = tripInfoComponent.getElement().querySelector(`.trip-info__main`);
-
-render(tripInfoMainElement, new TripTitleView().getElement(), RenderPositions.AFTERBEGIN);
-render(tripInfoMainElement, new TripDatesView().getElement(), RenderPositions.BEFOREEND);
-render(tripInfoComponent.getElement(), new TripCostView().getElement(), RenderPositions.BEFOREEND);
-
+const tripMainElement = document.querySelector(`.trip-main`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
-
-render(tripControlsElement, new MenuView().getElement(), RenderPositions.AFTERBEGIN);
-render(tripControlsElement, new FiltersView().getElement(), RenderPositions.BEFOREEND);
-
 const tripEventsElement = document.querySelector(`.trip-events`);
 
+renderTripInfo(tripMainElement);
+renderTripControls(tripControlsElement);
 renderEventsList(tripEventsElement, points);
