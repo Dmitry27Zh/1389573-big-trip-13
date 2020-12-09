@@ -1,5 +1,6 @@
 import {TYPES} from '../const';
 import dayjs from 'dayjs';
+import {createElement} from '../utils';
 
 const createEditEventTypesTemplate = (currentType) => {
   return TYPES.map((type) => `
@@ -49,8 +50,19 @@ const createDestinationInfoTemplate = (info) => {
   `;
 };
 
-export const createEditPointTemplate = (offersToTypes, point = {}, info) => {
-  const {type = Object.keys(offersToTypes)[0], destination = ``, date = {start: ``, end: ``}, cost = ``, offers = []} = point;
+const defaultPoint = (offersToTypes) => ({
+  type: Object.keys(offersToTypes)[0],
+  destination: ``,
+  date: {
+    start: ``,
+    end: ``,
+  },
+  cost: ``,
+  offers: [],
+});
+
+const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTypes), info) => {
+  const {type, destination, date: {start, end}, cost = ``, offers = []} = point;
   return `
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -84,10 +96,10 @@ export const createEditPointTemplate = (offersToTypes, point = {}, info) => {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${date.start ? dayjs(date.start).format(`DD/MM/YY HH:mm`) : `19/03/19 00:00`}">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${start ? dayjs(start).format(`DD/MM/YY HH:mm`) : `19/03/19 00:00`}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${date.end ? dayjs(date.end).format(`DD/MM/YY HH:mm`) : `19/03/19 00:00`}">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${end ? dayjs(end).format(`DD/MM/YY HH:mm`) : `19/03/19 00:00`}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -111,3 +123,27 @@ export const createEditPointTemplate = (offersToTypes, point = {}, info) => {
     </li>
   `;
 };
+
+export class EditPointView {
+  constructor(offersToTypes, point, info) {
+    this._offersToTypes = offersToTypes;
+    this._point = point;
+    this._info = info;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEditPointTemplate(this._offersToTypes, this._point, this._info);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {createElement} from '../utils';
 
 const createOfferTemplate = (allOffers, offer) => {
   const {name, price} = allOffers[offer];
@@ -33,7 +34,7 @@ const createTimeTemplate = (start, end) => {
   `;
 };
 
-export const createPointTemplate = (point, availableOffers) => {
+const createPointTemplate = (point, availableOffers) => {
   const {type, destination, date: {start, end}, cost, offers, isFavorite} = point;
   return `
     <li class="trip-events__item">
@@ -66,3 +67,26 @@ export const createPointTemplate = (point, availableOffers) => {
     </li>
   `;
 };
+
+export class PointView {
+  constructor(point, availableOffers) {
+    this._point = point;
+    this._availableOffers = availableOffers;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createPointTemplate(this._point, this._availableOffers);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
