@@ -50,7 +50,7 @@ const createDestinationInfoTemplate = (info) => {
   `;
 };
 
-const deafaultPoint = (offersToTypes) => ({
+const defaultPoint = (offersToTypes) => ({
   type: Object.keys(offersToTypes)[0],
   destination: ``,
   date: {
@@ -61,7 +61,7 @@ const deafaultPoint = (offersToTypes) => ({
   offers: [],
 });
 
-const createEditPointTemplate = (offersToTypes, point = deafaultPoint(offersToTypes), info) => {
+const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTypes), info) => {
   const {type, destination, date: {start, end}, cost = ``, offers = []} = point;
   return `
     <li class="trip-events__item">

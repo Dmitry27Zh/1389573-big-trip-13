@@ -6,8 +6,8 @@ export const getRandomInteger = (start = 0, end = 1) => {
   return Math.floor(min + Math.random() * (max - min + 1));
 };
 
-export const getRandomItem = (array) => {
-  return array[getRandomInteger(array.length - 1)];
+export const getRandomItem = (collection) => {
+  return collection[getRandomInteger(collection.length - 1)];
 };
 
 export const getRandomArray = (array) => {
