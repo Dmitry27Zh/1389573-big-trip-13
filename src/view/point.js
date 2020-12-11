@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {createElement} from '../utils';
+import Abstract from './abstract';
 
 const createOfferTemplate = (allOffers, offer) => {
   const {name, price} = allOffers[offer];
@@ -68,25 +68,14 @@ const createPointTemplate = (point, availableOffers) => {
   `;
 };
 
-export class PointView {
+export default class Point extends Abstract {
   constructor(point, availableOffers) {
+    super();
     this._point = point;
     this._availableOffers = availableOffers;
-    this._element = null;
   }
 
   getTemplate() {
     return createPointTemplate(this._point, this._availableOffers);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

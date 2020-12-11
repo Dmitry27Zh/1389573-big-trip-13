@@ -1,4 +1,4 @@
-import {createElement} from '../utils';
+import Abstract from './abstract';
 
 const createTripTitleTemplate = () => {
   return `
@@ -6,23 +6,8 @@ const createTripTitleTemplate = () => {
   `;
 };
 
-export class TripTitleView {
-  constructor() {
-    this._element = null;
-  }
-
+export default class TripTitle extends Abstract {
   getTemplate() {
     return createTripTitleTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

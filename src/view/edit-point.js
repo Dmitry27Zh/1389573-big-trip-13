@@ -1,6 +1,6 @@
 import {TYPES} from '../const';
 import dayjs from 'dayjs';
-import {createElement} from '../utils';
+import Abstract from './abstract';
 
 const createEditEventTypesTemplate = (currentType) => {
   return TYPES.map((type) => `
@@ -124,26 +124,15 @@ const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTyp
   `;
 };
 
-export class EditPointView {
+export default class EditPoint extends Abstract {
   constructor(offersToTypes, point, info) {
+    super();
     this._offersToTypes = offersToTypes;
     this._point = point;
     this._info = info;
-    this._element = null;
   }
 
   getTemplate() {
     return createEditPointTemplate(this._offersToTypes, this._point, this._info);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

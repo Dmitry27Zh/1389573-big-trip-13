@@ -7,11 +7,12 @@ export default class Abstract {
     }
     this._element = null;
   }
+
   getTemplate() {
     throw new Error(`Method not implemented`);
   }
 
-  getELement() {
+  getElement() {
     if (!this._element) {
       this._element = createElement(this.getTemplate());
     }
