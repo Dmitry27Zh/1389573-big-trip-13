@@ -11,7 +11,7 @@ import EditPointView from './view/edit-point';
 import {generatePoint} from './mock/point';
 import {generateOffersToTypes} from './mock/offers-to-types';
 import {generateInfoToDestinations} from './mock/info-to-destinations';
-import {render} from './utils';
+import {render, replace} from './utils/render';
 import {RenderPositions} from './const';
 
 const POINTS_QUANTITY = 15;
@@ -22,37 +22,37 @@ const points = new Array(POINTS_QUANTITY).fill().map(() => generatePoint(offersT
 
 const renderTripInfo = (tripInfoContainer) => {
   const tripInfoComponent = new TripInfoView();
-  render(tripInfoContainer, tripInfoComponent.getElement(), RenderPositions.AFTERBEGIN);
+  render(tripInfoContainer, tripInfoComponent, RenderPositions.AFTERBEGIN);
   const tripInfoMainElement = tripInfoComponent.getElement().querySelector(`.trip-info__main`);
-  render(tripInfoMainElement, new TripTitleView().getElement(), RenderPositions.AFTERBEGIN);
-  render(tripInfoMainElement, new TripDatesView().getElement(), RenderPositions.BEFOREEND);
-  render(tripInfoComponent.getElement(), new TripCostView().getElement(), RenderPositions.BEFOREEND);
+  render(tripInfoMainElement, new TripTitleView(), RenderPositions.AFTERBEGIN);
+  render(tripInfoMainElement, new TripDatesView(), RenderPositions.BEFOREEND);
+  render(tripInfoComponent, new TripCostView(), RenderPositions.BEFOREEND);
 };
 
 const renderTripControls = (tripControlsContainer) => {
-  render(tripControlsContainer, new MenuView().getElement(), RenderPositions.AFTERBEGIN);
-  render(tripControlsContainer, new FiltersView().getElement(), RenderPositions.BEFOREEND);
+  render(tripControlsContainer, new MenuView(), RenderPositions.AFTERBEGIN);
+  render(tripControlsContainer, new FiltersView(), RenderPositions.BEFOREEND);
 };
 
 const renderPoint = (pointsListElement, point, availableOffers, info) => {
   const pointComponent = new PointView(point, availableOffers);
   const editPointComponent = new EditPointView(point, offersToTypes, info);
 
-  const replacePointToForm = () => pointsListElement.replaceChild(editPointComponent.getElement(), pointComponent.getElement());
+  const replacePointToForm = () => replace(editPointComponent, pointComponent);
 
-  const replaceFormToPoint = () => pointsListElement.replaceChild(pointComponent.getElement(), editPointComponent.getElement());
+  const replaceFormToPoint = () => replace(pointComponent, editPointComponent);
 
   pointComponent.setEditClickHandler(replacePointToForm);
   editPointComponent.setFormSubmitHandler(() => {
     replaceFormToPoint();
   });
-  render(pointsListElement, pointComponent.getElement(), RenderPositions.BEFOREEND);
+  render(pointsListElement, pointComponent, RenderPositions.BEFOREEND);
 };
 
 const renderEventsList = (eventsContainer, eventPoints) => {
-  render(eventsContainer, new SortView().getElement(), RenderPositions.BEFOREEND);
+  render(eventsContainer, new SortView(), RenderPositions.BEFOREEND);
   const eventsListComponent = new EventsListView();
-  render(eventsContainer, eventsListComponent.getElement(), RenderPositions.BEFOREEND);
+  render(eventsContainer, eventsListComponent, RenderPositions.BEFOREEND);
 
   eventPoints.forEach((eventPoint) => renderPoint(eventsListComponent.getElement(), eventPoint, offersToTypes[eventPoint.type], infoToDestinations[eventPoint.destination]));
 };

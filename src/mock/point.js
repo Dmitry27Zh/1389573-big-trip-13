@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {TYPES, DESTINATIONS} from '../const';
-import {getRandomInteger, getRandomItem, getRandomArray} from '../utils';
+import {getRandomInteger, getRandomItem, getRandomArray} from '../utils/common';
 
 const generateDate = (date = dayjs()) => {
   const maxHoursGap = 24;
