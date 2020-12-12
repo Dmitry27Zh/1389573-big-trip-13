@@ -125,14 +125,25 @@ const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTyp
 };
 
 export default class EditPoint extends Abstract {
-  constructor(offersToTypes, point, info) {
+  constructor(point, offersToTypes, info) {
     super();
     this._offersToTypes = offersToTypes;
     this._point = point;
     this._info = info;
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
   }
 
   getTemplate() {
     return createEditPointTemplate(this._offersToTypes, this._point, this._info);
+  }
+
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
   }
 }

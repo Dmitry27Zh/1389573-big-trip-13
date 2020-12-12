@@ -6,6 +6,7 @@ export default class Abstract {
       throw new Error(`Can't instantiate Abstract`);
     }
     this._element = null;
+    this._callback = {};
   }
 
   getTemplate() {

@@ -36,16 +36,14 @@ const renderTripControls = (tripControlsContainer) => {
 
 const renderPoint = (pointsListElement, point, availableOffers, info) => {
   const pointComponent = new PointView(point, availableOffers);
-  const editPointComponent = new EditPointView(offersToTypes, point, info);
+  const editPointComponent = new EditPointView(point, offersToTypes, info);
 
   const replacePointToForm = () => pointsListElement.replaceChild(editPointComponent.getElement(), pointComponent.getElement());
 
   const replaceFormToPoint = () => pointsListElement.replaceChild(pointComponent.getElement(), editPointComponent.getElement());
 
-  pointComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => replacePointToForm());
-
-  editPointComponent.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
-    evt.preventDefault();
+  pointComponent.setEditClickHandler(replacePointToForm);
+  editPointComponent.setFormSubmitHandler(() => {
     replaceFormToPoint();
   });
   render(pointsListElement, pointComponent.getElement(), RenderPositions.BEFOREEND);
