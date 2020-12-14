@@ -1,7 +1,7 @@
 import {RenderPositions} from '../const';
 import Abstract from '../view/abstract';
 
-export const render = (container, element, place) => {
+export const render = (container, element, place = RenderPositions.BEFOREEND) => {
   if (container instanceof Abstract) {
     container = container.getElement();
   }
@@ -18,7 +18,9 @@ export const render = (container, element, place) => {
   }
 };
 
-export const replace = (newChild, oldChild) => {
+export const replaceElements = (newElement, oldElement) => {
+  let newChild = newElement;
+  let oldChild = oldElement;
   if (oldChild instanceof Abstract) {
     oldChild = oldChild.getElement();
   }
@@ -27,10 +29,9 @@ export const replace = (newChild, oldChild) => {
   }
   const parent = oldChild.parentElement;
 
-  if (!parent || oldChild === null || newChild === null) {
+  if (!parent || !(oldChild instanceof HTMLElement) || !(newChild instanceof HTMLElement)) {
     throw new Error(`Cant't replace unexisting elements`);
   }
-
   parent.replaceChild(newChild, oldChild);
 };
 
