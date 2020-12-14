@@ -131,6 +131,7 @@ export default class EditPoint extends Abstract {
     this._point = point;
     this._info = info;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._closeClickHandler = this._closeClickHandler.bind(this);
   }
 
   getTemplate() {
@@ -142,8 +143,17 @@ export default class EditPoint extends Abstract {
     this._callback.formSubmit();
   }
 
+  _closeClickHandler() {
+    this._callback.closeClick();
+  }
+
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  setCloseClickHandler(callback) {
+    this._callback.closeClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._closeClickHandler);
   }
 }

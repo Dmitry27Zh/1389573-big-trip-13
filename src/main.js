@@ -42,9 +42,25 @@ const renderPoint = (pointsListElement, point, availableOffers, info) => {
 
   const replaceFormToPoint = () => replaceElements(pointComponent, editPointComponent);
 
-  pointComponent.setEditClickHandler(replacePointToForm);
+  const escKeydownHandler = (evt) => {
+    if (evt.key === `Esc` || evt.key === `Escape`) {
+      replaceFormToPoint();
+      document.removeEventListener(`keydown`, escKeydownHandler);
+    }
+  };
+
+  pointComponent.setEditClickHandler(() => {
+    replacePointToForm();
+    document.addEventListener(`keydown`, escKeydownHandler);
+  });
+
   editPointComponent.setFormSubmitHandler(() => {
     replaceFormToPoint();
+    document.removeEventListener(`keydown`, escKeydownHandler);
+    editPointComponent.setCloseClickHandler(() => {
+      replaceFormToPoint();
+      document.removeEventListener(`keydown`, escKeydownHandler);
+    });
   });
   render(pointsListElement, pointComponent);
 };
