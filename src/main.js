@@ -1,18 +1,17 @@
-import TripInfoView from './views/trip-info';
-import TripTitleView from './views/trip-title';
-import TripDatesView from './views/trip-dates';
-import TripCostView from './views/trip-cost';
-import MenuView from './views/menu';
-import FiltersView from './views/filters';
-import SortView from './views/sort';
-import EventsListView from './views/events-list';
-import PointView from './views/point';
-import EditPointView from './views/edit-point';
-import NoPointsMessage from './views/no-points-message';
+import TripInfoView from './view/trip-info';
+import TripTitleView from './view/trip-title';
+import TripDatesView from './view/trip-dates';
+import TripCostView from './view/trip-cost';
+import MenuView from './view/menu';
+import FiltersView from './view/filters';
+import SortView from './view/sort';
+import EventsListView from './view/events-list';
+import NoPointsMessage from './view/no-points-message';
+import PointPresenter from './presenter/point';
 import {generatePoint} from './mock/point';
 import {generateOffersToTypes} from './mock/offers-to-types';
 import {generateInfoToDestinations} from './mock/info-to-destinations';
-import {render, replaceElements} from './utils/render';
+import {render} from './utils/render';
 import {RenderPositions} from './const';
 
 const POINTS_QUANTITY = 15;
@@ -35,45 +34,15 @@ const renderTripControls = (tripControlsContainer) => {
   render(tripControlsContainer, new FiltersView());
 };
 
-const renderPoint = (pointsListElement, point, availableOffers, info) => {
-  const pointComponent = new PointView(point, availableOffers);
-  const editPointComponent = new EditPointView(point, offersToTypes, info);
-
-  const replacePointToForm = () => replaceElements(editPointComponent, pointComponent);
-
-  const replaceFormToPoint = () => replaceElements(pointComponent, editPointComponent);
-
-  const escKeydownHandler = (evt) => {
-    if (evt.key === `Esc` || evt.key === `Escape`) {
-      evt.preventDefault();
-      replaceFormToPoint();
-      document.removeEventListener(`keydown`, escKeydownHandler);
-    }
-  };
-
-  pointComponent.setEditClickHandler(() => {
-    replacePointToForm();
-    document.addEventListener(`keydown`, escKeydownHandler);
-    editPointComponent.setCloseClickHandler(() => {
-      replaceFormToPoint();
-      document.removeEventListener(`keydown`, escKeydownHandler);
-    });
-  });
-
-  editPointComponent.setFormSubmitHandler(() => {
-    replaceFormToPoint();
-    document.removeEventListener(`keydown`, escKeydownHandler);
-  });
-
-  render(pointsListElement, pointComponent);
-};
-
 const renderEventsList = (eventsContainer, eventPoints) => {
   render(eventsContainer, new SortView());
   const eventsListComponent = new EventsListView();
   render(eventsContainer, eventsListComponent);
 
-  eventPoints.forEach((eventPoint) => renderPoint(eventsListComponent.getElement(), eventPoint, offersToTypes[eventPoint.type], infoToDestinations[eventPoint.destination]));
+  eventPoints.forEach((eventPoint) => {
+    const pointPresenter = new PointPresenter(eventsListComponent, offersToTypes);
+    pointPresenter.init(eventPoint, offersToTypes[eventPoint.type], infoToDestinations[eventPoint.destination]);
+  });
 };
 
 
