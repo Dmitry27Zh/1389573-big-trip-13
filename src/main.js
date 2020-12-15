@@ -1,13 +1,14 @@
-import TripInfoView from './view/trip-info';
-import TripTitleView from './view/trip-title';
-import TripDatesView from './view/trip-dates';
-import TripCostView from './view/trip-cost';
-import MenuView from './view/menu';
-import FiltersView from './view/filters';
-import SortView from './view/sort';
-import EventsListView from './view/events-list';
-import PointView from './view/point';
-import EditPointView from './view/edit-point';
+import TripInfoView from './views/trip-info';
+import TripTitleView from './views/trip-title';
+import TripDatesView from './views/trip-dates';
+import TripCostView from './views/trip-cost';
+import MenuView from './views/menu';
+import FiltersView from './views/filters';
+import SortView from './views/sort';
+import EventsListView from './views/events-list';
+import PointView from './views/point';
+import EditPointView from './views/edit-point';
+import NoPointsMessage from './views/no-points-message';
 import {generatePoint} from './mock/point';
 import {generateOffersToTypes} from './mock/offers-to-types';
 import {generateInfoToDestinations} from './mock/info-to-destinations';
@@ -44,6 +45,7 @@ const renderPoint = (pointsListElement, point, availableOffers, info) => {
 
   const escKeydownHandler = (evt) => {
     if (evt.key === `Esc` || evt.key === `Escape`) {
+      evt.preventDefault();
       replaceFormToPoint();
       document.removeEventListener(`keydown`, escKeydownHandler);
     }
@@ -52,16 +54,17 @@ const renderPoint = (pointsListElement, point, availableOffers, info) => {
   pointComponent.setEditClickHandler(() => {
     replacePointToForm();
     document.addEventListener(`keydown`, escKeydownHandler);
-  });
-
-  editPointComponent.setFormSubmitHandler(() => {
-    replaceFormToPoint();
-    document.removeEventListener(`keydown`, escKeydownHandler);
     editPointComponent.setCloseClickHandler(() => {
       replaceFormToPoint();
       document.removeEventListener(`keydown`, escKeydownHandler);
     });
   });
+
+  editPointComponent.setFormSubmitHandler(() => {
+    replaceFormToPoint();
+    document.removeEventListener(`keydown`, escKeydownHandler);
+  });
+
   render(pointsListElement, pointComponent);
 };
 
@@ -80,4 +83,9 @@ const tripEventsElement = document.querySelector(`.trip-events`);
 
 renderTripInfo(tripMainElement);
 renderTripControls(tripControlsElement);
-renderEventsList(tripEventsElement, points);
+
+if (points.length === 0) {
+  render(tripEventsElement, new NoPointsMessage());
+} else {
+  renderEventsList(tripEventsElement, points);
+}

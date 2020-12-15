@@ -1,5 +1,5 @@
 import {RenderPositions} from '../const';
-import Abstract from '../view/abstract';
+import Abstract from '../views/abstract';
 
 export const render = (container, element, place = RenderPositions.BEFOREEND) => {
   if (container instanceof Abstract) {
