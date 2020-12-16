@@ -1,4 +1,4 @@
-import {createElement} from '../utils';
+import Absract from './abstract';
 
 const createMenuTemplate = () => {
   return `
@@ -9,23 +9,8 @@ const createMenuTemplate = () => {
   `;
 };
 
-export class MenuView {
-  constructor() {
-    this._element = null;
-  }
-
+export default class Menu extends Absract {
   getTemplate() {
     return createMenuTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
