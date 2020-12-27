@@ -4,10 +4,7 @@ import TripDatesView from './view/trip-dates';
 import TripCostView from './view/trip-cost';
 import MenuView from './view/menu';
 import FiltersView from './view/filters';
-import SortView from './view/sort';
-import EventsListView from './view/events-list';
-import NoPointsMessage from './view/no-points-message';
-import PointPresenter from './presenter/point';
+import TripPresenter from './presenter/trip';
 import {generatePoint} from './mock/point';
 import {generateOffersToTypes} from './mock/offers-to-types';
 import {generateInfoToDestinations} from './mock/info-to-destinations';
@@ -34,18 +31,6 @@ const renderTripControls = (tripControlsContainer) => {
   render(tripControlsContainer, new FiltersView());
 };
 
-const renderEventsList = (eventsContainer, eventPoints) => {
-  render(eventsContainer, new SortView());
-  const eventsListComponent = new EventsListView();
-  render(eventsContainer, eventsListComponent);
-
-  eventPoints.forEach((eventPoint) => {
-    const pointPresenter = new PointPresenter(eventsListComponent, offersToTypes);
-    pointPresenter.init(eventPoint, offersToTypes[eventPoint.type], infoToDestinations[eventPoint.destination]);
-  });
-};
-
-
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 const tripEventsElement = document.querySelector(`.trip-events`);
@@ -53,8 +38,6 @@ const tripEventsElement = document.querySelector(`.trip-events`);
 renderTripInfo(tripMainElement);
 renderTripControls(tripControlsElement);
 
-if (points.length === 0) {
-  render(tripEventsElement, new NoPointsMessage());
-} else {
-  renderEventsList(tripEventsElement, points);
-}
+const tripPresenter = new TripPresenter(tripEventsElement, points, offersToTypes, infoToDestinations);
+tripPresenter.init();
+
