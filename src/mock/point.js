@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import {TYPES, DESTINATIONS} from '../const';
 import {getRandomInteger, getRandomItem, getRandomArray} from '../utils/common';
+import {nanoid} from 'nanoid';
 
 const generateDate = (date = dayjs()) => {
   const maxHoursGap = 24;
@@ -15,6 +16,7 @@ export const generatePoint = (offersToTypes) => {
   const type = getRandomItem(TYPES);
   const destination = getRandomItem(DESTINATIONS);
   return {
+    id: nanoid(),
     type,
     destination,
     date: {
@@ -23,6 +25,6 @@ export const generatePoint = (offersToTypes) => {
     },
     cost: getRandomInteger(100, 300),
     offers: getRandomArray(offersToTypes[type].map((el, index) => index)),
-    isFavorite: Boolean(getRandomInteger(1)),
+    isFavorite: Boolean(getRandomInteger(0, 1)),
   };
 };

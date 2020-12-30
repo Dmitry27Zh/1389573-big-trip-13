@@ -11,7 +11,7 @@ import {generateInfoToDestinations} from './mock/info-to-destinations';
 import {render} from './utils/render';
 import {RenderPositions} from './const';
 
-const POINTS_QUANTITY = 15;
+const POINTS_QUANTITY = 25;
 
 const offersToTypes = generateOffersToTypes();
 const infoToDestinations = generateInfoToDestinations();
@@ -38,6 +38,5 @@ const tripEventsElement = document.querySelector(`.trip-events`);
 renderTripInfo(tripMainElement);
 renderTripControls(tripControlsElement);
 
-const tripPresenter = new TripPresenter(tripEventsElement, points, offersToTypes, infoToDestinations);
-tripPresenter.init();
-
+const tripPresenter = new TripPresenter(tripEventsElement);
+tripPresenter.init(points, offersToTypes, infoToDestinations);

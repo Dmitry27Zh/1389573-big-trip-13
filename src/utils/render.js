@@ -40,3 +40,11 @@ export const createElement = (template) => {
   node.innerHTML = template;
   return node.firstElementChild;
 };
+
+export const removeElement = (component) => {
+  if (!(component instanceof Abstract)) {
+    throw new Error(`Can remove only component`);
+  }
+  component.getElement().remove();
+  component.removeElement();
+};
