@@ -1,16 +1,19 @@
 import PointView from '../view/point';
 import EditPointView from '../view/edit-point';
 import {render, replaceElements, removeElement} from '../utils/render';
+import {Mode} from '../const';
 
 export default class Point {
-  constructor(pointContainer, offersToTypes, availableOffers, info, changeData) {
+  constructor(pointContainer, offersToTypes, availableOffers, info, changeData, changeMode) {
     this._pointContainer = pointContainer;
     this._changeData = changeData;
+    this._changeMode = changeMode;
     this._offersToTypes = offersToTypes;
     this._availableOffers = availableOffers;
     this._info = info;
     this._pointComponent = null;
     this._editPointComponent = null;
+    this._mode = Mode.DEFAULT;
     this._handleCloseFormCLick = this._handleCloseFormCLick.bind(this);
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
@@ -31,10 +34,10 @@ export default class Point {
       render(this._pointContainer, this._pointComponent);
       return;
     }
-    if (this._pointContainer.getElement().contains(lastPointComponent.getElement())) {
+    if (this._mode === Mode.DEFAULT) {
       replaceElements(this._pointComponent, lastPointComponent);
     }
-    if (this._pointContainer.getElement().contains(lastEditPointComponent.getElement())) {
+    if (this._mode === Mode.EDITING) {
       replaceElements(this._editPointComponent, lastEditPointComponent);
     }
     removeElement(lastPointComponent);
@@ -43,10 +46,19 @@ export default class Point {
 
   _replacePointToForm() {
     replaceElements(this._editPointComponent, this._pointComponent);
+    this._changeMode();
+    this._mode = Mode.EDITING;
   }
 
   _replaceFormToPoint() {
     replaceElements(this._pointComponent, this._editPointComponent);
+    this._mode = Mode.DEFAULT;
+  }
+
+  resetView() {
+    if (this._mode === Mode.EDITING) {
+      this._replaceFormToPoint();
+    }
   }
 
   _escKeydownHandler(evt) {

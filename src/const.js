@@ -5,4 +5,9 @@ const RenderPositions = {
   BEFOREEND: `beforeEnd`,
 };
 
-export {TYPES, DESTINATIONS, RenderPositions};
+const Mode = {
+  DEFAULT: `DEFAULT`,
+  EDITING: `EDITING`,
+};
+
+export {TYPES, DESTINATIONS, RenderPositions, Mode};
