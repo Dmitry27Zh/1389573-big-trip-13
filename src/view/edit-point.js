@@ -1,7 +1,7 @@
 import {TYPES} from '../const';
 import dayjs from 'dayjs';
-import Abstract from './abstract';
 import {capitalizeFirstLetter} from '../utils/common';
+import Smart from '../view/smart';
 
 const createEditEventTypesTemplate = (currentType) => {
   return TYPES.map((type) => `
@@ -125,7 +125,7 @@ const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTyp
   `;
 };
 
-export default class EditPoint extends Abstract {
+export default class EditPoint extends Smart {
   constructor(point, offersToTypes, infoToDestinations) {
     super();
     this._offersToTypes = offersToTypes;
@@ -143,26 +143,12 @@ export default class EditPoint extends Abstract {
   }
 
   static parsePointToData(point) {
-    return Object.assign({}, point, {activatedTypeToggle: false});
+    return Object.assign({}, point);
   }
 
   static parseDataToPoint(data) {
     let point = Object.assign({}, data);
-    delete point.activatedTypeToggle;
     return point;
-  }
-
-  _updateData(update) {
-    this._data = Object.assign({}, this._data, update);
-  }
-
-  _updateElement() {
-    const prevElement = this.getElement();
-    const parent = prevElement.parentElement;
-    this.removeElement();
-    const newElement = this.getElement();
-    parent.replaceChild(newElement, prevElement);
-    this._restoreHandlers();
   }
 
   reset(point) {
