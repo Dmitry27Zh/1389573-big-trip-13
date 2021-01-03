@@ -1,6 +1,7 @@
 import {TYPES} from '../const';
 import dayjs from 'dayjs';
 import Abstract from './abstract';
+import {capitalizeFirstLetter} from '../utils/common';
 
 const createEditEventTypesTemplate = (currentType) => {
   return TYPES.map((type) => `
@@ -62,7 +63,7 @@ const defaultPoint = (offersToTypes) => ({
 });
 
 const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTypes), info) => {
-  const {type, destination, date: {start, end}, cost = ``, offers = []} = point;
+  const {type, destination, date: {start, end}, cost = ``, offers = [], activatedTypeToggle} = point;
   return `
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -72,7 +73,7 @@ const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTyp
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${activatedTypeToggle ? `checked` : ``}>
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
@@ -128,19 +129,68 @@ export default class EditPoint extends Abstract {
   constructor(point, offersToTypes, info) {
     super();
     this._offersToTypes = offersToTypes;
-    this._point = point;
+    this._data = EditPoint.parsePointToData(point);
     this._info = info;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._closeClickHandler = this._closeClickHandler.bind(this);
+    this._typeToggleClickHandler = this._typeToggleClickHandler.bind(this);
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._offersToTypes, this._point, this._info);
+    return createEditPointTemplate(this._offersToTypes, this._data, this._info);
+  }
+
+  static parsePointToData(point) {
+    return Object.assign({}, point, {activatedTypeToggle: false});
+  }
+
+  static parseDataToPoint(data) {
+    let point = Object.assign({}, data);
+    delete point.activatedTypeToggle;
+    return point;
+  }
+
+  _updateData(update) {
+    this._data = Object.assign({}, this._data, update);
+  }
+
+  _updateElement() {
+    const prevElement = this.getElement();
+    const parent = prevElement.parentElement;
+    this.removeElement();
+    const newElement = this.getElement();
+    parent.replaceChild(newElement, prevElement);
+    this._restoreHandlers();
+  }
+
+  reset(point) {
+    this._updateData(EditPoint.parsePointToData(point));
+    this._updateElement();
+  }
+
+  _restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setCloseClickHandler(this._callback.closeClick);
+  }
+
+  _typeToggleClickHandler({target}) {
+    this._updateData({
+      activatedTypeToggle: true,
+      type: capitalizeFirstLetter(target.value),
+      offers: [],
+    });
+    this._updateElement();
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._typeToggleClickHandler);
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(EditPoint.parseDataToPoint(this._data));
   }
 
   _closeClickHandler() {
