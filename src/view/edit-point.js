@@ -2,6 +2,8 @@ import {TYPES} from '../const';
 import dayjs from 'dayjs';
 import {capitalizeFirstLetter} from '../utils/common';
 import Smart from '../view/smart';
+import flatpickr from 'flatpickr';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const createEditEventTypesTemplate = (currentType) => {
   return TYPES.map((type) => `
@@ -135,7 +137,10 @@ export default class EditPoint extends Smart {
     this._closeClickHandler = this._closeClickHandler.bind(this);
     this._typeToggleClickHandler = this._typeToggleClickHandler.bind(this);
     this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
+    this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
     this._setInnerHandlers();
+    this._startDatePicker = null;
+    this._setDatePicker();
   }
 
   getTemplate() {
@@ -149,6 +154,18 @@ export default class EditPoint extends Smart {
   static parseDataToPoint(data) {
     let point = Object.assign({}, data);
     return point;
+  }
+
+  _setDatePicker() {
+    if (this._startDatePicker) {
+      this._startDatePicker.destroy();
+      this._startDatePicker = null;
+    }
+    this._startDatePicker = flatpickr(this.getElement().querySelector(`#event-start-time-1`), {dateFormat: `d/m/y H:i`, onChange: this._startDateChangeHandler});
+  }
+
+  _startDateChangeHandler([startDate]) {
+    this._updateData({date: Object.assign({}, this._data.date, {start: startDate})});
   }
 
   reset(point) {
@@ -176,7 +193,7 @@ export default class EditPoint extends Smart {
       this._updateElement();
       target.setCustomValidity(``);
     } else {
-      target.setCustomValidity(`Wrong desnatination`);
+      target.setCustomValidity(`Wrong destination`);
     }
     target.reportValidity();
   }
