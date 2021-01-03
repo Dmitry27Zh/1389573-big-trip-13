@@ -126,19 +126,20 @@ const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTyp
 };
 
 export default class EditPoint extends Abstract {
-  constructor(point, offersToTypes, info) {
+  constructor(point, offersToTypes, infoToDestinations) {
     super();
     this._offersToTypes = offersToTypes;
     this._data = EditPoint.parsePointToData(point);
-    this._info = info;
+    this._infoToDestinations = infoToDestinations;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._closeClickHandler = this._closeClickHandler.bind(this);
     this._typeToggleClickHandler = this._typeToggleClickHandler.bind(this);
+    this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
     this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._offersToTypes, this._data, this._info);
+    return createEditPointTemplate(this._offersToTypes, this._data, this._infoToDestinations[this._data.destination]);
   }
 
   static parsePointToData(point) {
@@ -177,15 +178,26 @@ export default class EditPoint extends Abstract {
 
   _typeToggleClickHandler({target}) {
     this._updateData({
-      activatedTypeToggle: true,
       type: capitalizeFirstLetter(target.value),
       offers: [],
     });
     this._updateElement();
   }
 
+  _destinationToggleHandler({target}) {
+    if (Object.keys(this._infoToDestinations).some((destination) => destination === target.value)) {
+      this._updateData({destination: target.value});
+      this._updateElement();
+      target.setCustomValidity(``);
+    } else {
+      target.setCustomValidity(`Wrong desnatination`);
+    }
+    target.reportValidity();
+  }
+
   _setInnerHandlers() {
     this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._typeToggleClickHandler);
+    this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationToggleHandler);
   }
 
   _formSubmitHandler(evt) {

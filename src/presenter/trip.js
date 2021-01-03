@@ -40,15 +40,15 @@ export default class Trip {
     this._sortComponent.setSortClickHandler(this._handleSortChange);
   }
 
-  _renderPoint(eventPoint, availableOffers, info) {
-    const pointPresenter = new PointPresenter(this._eventsListComponent, this._offersToTypes, availableOffers, info, this._handlePointChange, this._handleModeChange);
-    pointPresenter.init(eventPoint, availableOffers, info);
+  _renderPoint(eventPoint) {
+    const pointPresenter = new PointPresenter(this._eventsListComponent, this._offersToTypes, this._infoToDestinations, this._handlePointChange, this._handleModeChange);
+    pointPresenter.init(eventPoint);
     this._pointPresenters[eventPoint.id] = pointPresenter;
   }
 
   _renderPoints() {
     this._eventPoints.forEach((point) => {
-      this._renderPoint(point, this._offersToTypes[point.type], this._infoToDestinations[point.destination]);
+      this._renderPoint(point, this._infoToDestinations[point.destination]);
     });
   }
 

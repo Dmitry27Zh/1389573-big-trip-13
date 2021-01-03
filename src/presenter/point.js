@@ -4,13 +4,12 @@ import {render, replaceElements, removeElement} from '../utils/render';
 import {Mode} from '../const';
 
 export default class Point {
-  constructor(pointContainer, offersToTypes, availableOffers, info, changeData, changeMode) {
+  constructor(pointContainer, offersToTypes, infoToDestinations, changeData, changeMode) {
     this._pointContainer = pointContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
     this._offersToTypes = offersToTypes;
-    this._availableOffers = availableOffers;
-    this._info = info;
+    this._infoToDestinations = infoToDestinations;
     this._pointComponent = null;
     this._editPointComponent = null;
     this._mode = Mode.DEFAULT;
@@ -23,10 +22,11 @@ export default class Point {
 
   init(point) {
     this._point = point;
+    this._availableOffers = this._offersToTypes[point.type];
     const lastPointComponent = this._pointComponent;
     const lastEditPointComponent = this._editPointComponent;
     this._pointComponent = new PointView(point, this._availableOffers);
-    this._editPointComponent = new EditPointView(point, this._offersToTypes, this._info);
+    this._editPointComponent = new EditPointView(point, this._offersToTypes, this._infoToDestinations);
     this._pointComponent.setEditClickHandler(this._handleEditClick);
     this._pointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._editPointComponent.setFormSubmitHandler(this._handleFormSubmit);
