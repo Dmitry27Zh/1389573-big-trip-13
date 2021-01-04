@@ -138,9 +138,11 @@ export default class EditPoint extends Smart {
     this._typeToggleClickHandler = this._typeToggleClickHandler.bind(this);
     this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
+    this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
     this._setInnerHandlers();
     this._startDatePicker = null;
-    this._setDatePicker();
+    this._endDatePicker = null;
+    this._setDatePickers();
   }
 
   getTemplate() {
@@ -156,16 +158,25 @@ export default class EditPoint extends Smart {
     return point;
   }
 
-  _setDatePicker() {
+  _setDatePickers() {
     if (this._startDatePicker) {
       this._startDatePicker.destroy();
       this._startDatePicker = null;
     }
+    if (this._endDatePicker) {
+      this._endDatePicker.destroy();
+      this._endDatePicker = null;
+    }
     this._startDatePicker = flatpickr(this.getElement().querySelector(`#event-start-time-1`), {dateFormat: `d/m/y H:i`, onChange: this._startDateChangeHandler});
+    this._endDatePicker = flatpickr(this.getElement().querySelector(`#event-end-time-1`), {dateFormat: `d/m/y H:i`, onChange: this._endDateChangeHandler});
   }
 
   _startDateChangeHandler([startDate]) {
     this._updateData({date: Object.assign({}, this._data.date, {start: startDate})});
+  }
+
+  _endDateChangeHandler([endDate]) {
+    this._updateData({date: Object.assign({}, this._data.date, {end: endDate})});
   }
 
   reset(point) {
