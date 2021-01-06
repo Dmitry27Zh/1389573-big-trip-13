@@ -5,6 +5,7 @@ import TripCostView from './view/trip-cost';
 import MenuView from './view/menu';
 import FiltersView from './view/filters';
 import TripPresenter from './presenter/trip';
+import PointsModel from './model/points';
 import {generatePoint} from './mock/point';
 import {generateOffersToTypes} from './mock/offers-to-types';
 import {generateInfoToDestinations} from './mock/info-to-destinations';
@@ -38,5 +39,8 @@ const tripEventsElement = document.querySelector(`.trip-events`);
 renderTripInfo(tripMainElement);
 renderTripControls(tripControlsElement);
 
-const tripPresenter = new TripPresenter(tripEventsElement);
-tripPresenter.init(points, offersToTypes, infoToDestinations);
+const pointModel = new PointsModel();
+pointModel.setPoints(points);
+
+const tripPresenter = new TripPresenter(tripEventsElement, pointModel);
+tripPresenter.init(offersToTypes, infoToDestinations);

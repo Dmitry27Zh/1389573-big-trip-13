@@ -9,7 +9,8 @@ import {RenderPositions} from '../const';
 import {SortType} from '../const';
 
 export default class Trip {
-  constructor(eventsContainer) {
+  constructor(eventsContainer, pointModel) {
+    this._pointModel = pointModel;
     this._eventsContainer = eventsContainer;
     this._sortComponent = new SortView();
     this._eventsListComponent = new EventsListView();
@@ -21,18 +22,21 @@ export default class Trip {
     this._handleSortChange = this._handleSortChange.bind(this);
   }
 
-  init(eventPoints, offersToTypes, infoToDestinations) {
-    this._eventPoints = eventPoints.slice().sort(sortByDay);
-    this._sourcedPoints = this._eventPoints.slice();
+  init(offersToTypes, infoToDestinations) {
     this._offersToTypes = offersToTypes;
     this._infoToDestinations = infoToDestinations;
     render(this._eventsContainer, this._eventsListComponent);
-    if (this._eventPoints.length === 0) {
-      this._renderNoPoint();
-    } else {
-      this._renderSort();
-      this._renderPoints();
+    this._renderEventsList();
+  }
+
+  _getPoints() {
+    switch (this._currentSortType) {
+      case SortType.PRICE:
+        return this._pointModel.getPoints().slice().sort(sortByPrice);
+      case SortType.TIME:
+        return this._pointModel.getPoints().slice().sort(sortByTime);
     }
+    return this._pointModel.getPoints().slice().sort(sortByDay);
   }
 
   _renderSort() {
@@ -47,13 +51,23 @@ export default class Trip {
   }
 
   _renderPoints() {
-    this._eventPoints.forEach((point) => {
+    const points = this._getPoints();
+    points.forEach((point) => {
       this._renderPoint(point, this._infoToDestinations[point.destination]);
     });
   }
 
   _renderNoPoint() {
     render(this._eventsListComponent, this._noPointsMessageComponent);
+  }
+
+  _renderEventsList() {
+    if (this._getPoints().length === 0) {
+      this._renderNoPoint();
+    } else {
+      this._renderSort();
+      this._renderPoints();
+    }
   }
 
   _handlePointChange(updatedPoint) {
@@ -69,23 +83,9 @@ export default class Trip {
     if (sortType === this._currentSortType) {
       return;
     }
-    this._sortPoints(sortType);
     this._currentSortType = sortType;
     this._clearPointsList();
     this._renderPoints();
-  }
-
-  _sortPoints(sortType) {
-    switch (sortType) {
-      case SortType.TIME:
-        this._eventPoints.sort(sortByTime);
-        break;
-      case SortType.PRICE:
-        this._eventPoints.sort(sortByPrice);
-        break;
-      default:
-        this._eventPoints = this._sourcedPoints.slice();
-    }
   }
 
   _clearPointsList() {
