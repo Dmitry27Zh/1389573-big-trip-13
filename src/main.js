@@ -47,5 +47,5 @@ pointModel.setPoints(points);
 const filtersPresenter = new FiltersPresenter(tripControlsElement, filtersModel);
 filtersPresenter.init();
 
-const tripPresenter = new TripPresenter(tripEventsElement, pointModel);
+const tripPresenter = new TripPresenter(tripEventsElement, pointModel, filtersModel);
 tripPresenter.init(offersToTypes, infoToDestinations);

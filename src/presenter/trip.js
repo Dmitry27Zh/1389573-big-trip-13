@@ -5,11 +5,13 @@ import PointPresenter from '../presenter/point';
 import {render} from '../utils/render';
 import {sortByDay, sortByTime, sortByPrice} from '../utils/sort';
 import {RenderPositions} from '../const';
-import {SortType} from '../const';
+import {SortType, FilterType} from '../const';
+import dayjs from 'dayjs';
 
 export default class Trip {
-  constructor(eventsContainer, pointsModel) {
+  constructor(eventsContainer, pointsModel, filtersModel) {
     this._pointsModel = pointsModel;
+    this._filtersModel = filtersModel;
     this._eventsContainer = eventsContainer;
     this._sortComponent = new SortView();
     this._eventsListComponent = new EventsListView();
@@ -31,13 +33,7 @@ export default class Trip {
   }
 
   _getPoints() {
-    switch (this._currentSortType) {
-      case SortType.PRICE:
-        return this._pointsModel.getPoints().slice().sort(sortByPrice);
-      case SortType.TIME:
-        return this._pointsModel.getPoints().slice().sort(sortByTime);
-    }
-    return this._pointsModel.getPoints().slice().sort(sortByDay);
+    return this._filterPoints(this._sortPoints());
   }
 
   _renderSort() {
@@ -69,6 +65,26 @@ export default class Trip {
       this._renderSort();
       this._renderPoints();
     }
+  }
+
+  _sortPoints() {
+    switch (this._currentSortType) {
+      case SortType.PRICE:
+        return this._pointsModel.getPoints().slice().sort(sortByPrice);
+      case SortType.TIME:
+        return this._pointsModel.getPoints().slice().sort(sortByTime);
+    }
+    return this._pointsModel.getPoints().slice().sort(sortByDay);
+  }
+
+  _filterPoints(points) {
+    switch (this._filtersModel.getFilter()) {
+      case FilterType.FUTURE:
+        return points.filter((point) => dayjs(dayjs(point.date.start)).diff(dayjs()) >= 0);
+      case FilterType.PAST:
+        return points.filter((point) => dayjs(dayjs(point.date.start)).diff(dayjs()) <= 0);
+    }
+    return points;
   }
 
   _handlePointChange(updatedPoint) {

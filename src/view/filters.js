@@ -25,9 +25,20 @@ export default class Filters extends Abstract {
   constructor(currentFilter) {
     super();
     this._currentFilter = currentFilter;
+    this._filterChangeHandler = this._filterChangeHandler.bind(this);
   }
 
   getTemplate() {
     return createFiltersTemplate(this._currentFilter);
+  }
+
+  _filterChangeHandler(evt) {
+    evt.preventDefault();
+    this._callback.changeFilter(evt);
+  }
+
+  setFilterChangeHandler(callback) {
+    this._callback.changeFilter = callback;
+    this.getElement().addEventListener(`change`, this._filterChangeHandler);
   }
 }

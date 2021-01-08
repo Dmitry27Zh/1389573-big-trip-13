@@ -1,5 +1,9 @@
 const TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
 const DESTINATIONS = [`Amsterdam`, `Geneva`, `Chamonix`];
+const MaxTimeGap = {
+  DAYS: 7,
+  HOURS: 24,
+};
 const RenderPositions = {
   AFTERBEGIN: `afterBegin`,
   BEFOREEND: `beforeEnd`,
@@ -22,4 +26,4 @@ const FilterType = {
   PAST: `past`,
 };
 
-export {TYPES, DESTINATIONS, RenderPositions, Mode, SortType, FilterType};
+export {TYPES, DESTINATIONS, MaxTimeGap, RenderPositions, Mode, SortType, FilterType};

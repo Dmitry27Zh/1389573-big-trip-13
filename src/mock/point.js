@@ -1,13 +1,11 @@
 import dayjs from 'dayjs';
-import {TYPES, DESTINATIONS} from '../const';
+import {TYPES, DESTINATIONS, MaxTimeGap} from '../const';
 import {getRandomInteger, getRandomItem, getRandomArray} from '../utils/common';
 import {nanoid} from 'nanoid';
 
-const generateDate = (date = dayjs()) => {
-  const maxHoursGap = 24;
-  const maxDaysGap = 7;
-  const daysGap = getRandomInteger(maxDaysGap);
-  const hoursGap = getRandomInteger(maxHoursGap);
+const generateDate = (date = getRandomInteger(0, 1) ? dayjs().subtract(getRandomInteger(MaxTimeGap.DAYS), `day`) : dayjs()) => {
+  const daysGap = getRandomInteger(MaxTimeGap.DAYS);
+  const hoursGap = getRandomInteger(MaxTimeGap.HOURS);
   return dayjs(date).add(daysGap, `day`).add(hoursGap, `hour`).toDate();
 };
 
