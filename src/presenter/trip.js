@@ -3,14 +3,13 @@ import EventsListView from '../view/events-list';
 import NoPointsMessage from '../view/no-points-message';
 import PointPresenter from '../presenter/point';
 import {render} from '../utils/render';
-import {updateItem} from '../utils/common';
 import {sortByDay, sortByTime, sortByPrice} from '../utils/sort';
 import {RenderPositions} from '../const';
 import {SortType} from '../const';
 
 export default class Trip {
-  constructor(eventsContainer, pointModel) {
-    this._pointModel = pointModel;
+  constructor(eventsContainer, pointsModel) {
+    this._pointsModel = pointsModel;
     this._eventsContainer = eventsContainer;
     this._sortComponent = new SortView();
     this._eventsListComponent = new EventsListView();
@@ -20,11 +19,13 @@ export default class Trip {
     this._handlePointChange = this._handlePointChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortChange = this._handleSortChange.bind(this);
+    this._handleViewChange = this._handleViewChange.bind(this);
   }
 
   init(offersToTypes, infoToDestinations) {
     this._offersToTypes = offersToTypes;
     this._infoToDestinations = infoToDestinations;
+    this._pointsModel.addObserver(this._handleViewChange);
     render(this._eventsContainer, this._eventsListComponent);
     this._renderEventsList();
   }
@@ -32,11 +33,11 @@ export default class Trip {
   _getPoints() {
     switch (this._currentSortType) {
       case SortType.PRICE:
-        return this._pointModel.getPoints().slice().sort(sortByPrice);
+        return this._pointsModel.getPoints().slice().sort(sortByPrice);
       case SortType.TIME:
-        return this._pointModel.getPoints().slice().sort(sortByTime);
+        return this._pointsModel.getPoints().slice().sort(sortByTime);
     }
-    return this._pointModel.getPoints().slice().sort(sortByDay);
+    return this._pointsModel.getPoints().slice().sort(sortByDay);
   }
 
   _renderSort() {
@@ -71,7 +72,10 @@ export default class Trip {
   }
 
   _handlePointChange(updatedPoint) {
-    this._eventPoints = updateItem(this._eventPoints, updatedPoint);
+    this._pointsModel.updatePoints(updatedPoint);
+  }
+
+  _handleViewChange(updatedPoint) {
     this._pointPresenters[updatedPoint.id].init(updatedPoint);
   }
 
