@@ -1,7 +1,7 @@
 import PointView from '../view/point';
 import EditPointView from '../view/edit-point';
 import {render, replaceElements, removeElement} from '../utils/render';
-import {Mode} from '../const';
+import {Mode, UserAction, UpdateType} from '../const';
 
 export default class Point {
   constructor(pointContainer, offersToTypes, infoToDestinations, changeData, changeMode) {
@@ -85,11 +85,11 @@ export default class Point {
   _handleFormSubmit(editedPoint) {
     this._replaceFormToPoint();
     document.removeEventListener(`keydown`, this._escKeydownHandler);
-    this._changeData(editedPoint);
+    this._changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, editedPoint);
   }
 
   _handleFavoriteClick() {
-    this._changeData(Object.assign({}, this._point, {isFavorite: !this._point.isFavorite}));
+    this._changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, Object.assign({}, this._point, {isFavorite: !this._point.isFavorite}));
   }
 
   destroy() {

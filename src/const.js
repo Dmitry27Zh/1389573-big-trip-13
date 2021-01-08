@@ -26,4 +26,13 @@ const FilterType = {
   PAST: `past`,
 };
 
-export {TYPES, DESTINATIONS, MaxTimeGap, RenderPositions, Mode, SortType, FilterType};
+const UserAction = {
+  UPDATE_POINT: `update point`,
+};
+
+const UpdateType = {
+  MINOR: `minor`,
+  MAJOR: `major`,
+};
+
+export {TYPES, DESTINATIONS, MaxTimeGap, RenderPositions, Mode, SortType, FilterType, UserAction, UpdateType};

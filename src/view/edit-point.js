@@ -137,6 +137,7 @@ export default class EditPoint extends Smart {
     this._closeClickHandler = this._closeClickHandler.bind(this);
     this._typeToggleClickHandler = this._typeToggleClickHandler.bind(this);
     this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
+    this._priceChangeHandler = this._priceChangeHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
     this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
     this._setInnerHandlers();
@@ -210,9 +211,14 @@ export default class EditPoint extends Smart {
     target.reportValidity();
   }
 
+  _priceChangeHandler({target}) {
+    this._updateData({cost: +target.value});
+  }
+
   _setInnerHandlers() {
     this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._typeToggleClickHandler);
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationToggleHandler);
+    this.getElement().querySelector(`.event__input--price`).addEventListener(`change`, this._priceChangeHandler);
   }
 
   _formSubmitHandler(evt) {

@@ -1,16 +1,21 @@
 import Observer from '../utils/observer';
 
 export default class Filters extends Observer {
-  constructor(currentFilter) {
+  constructor() {
     super();
-    this._currentFilter = currentFilter;
+    this._currentFilter = null;
   }
 
-  setFilter(newFilter) {
-    this._currentFilter = newFilter;
+  setFilter(filter) {
+    this._currentFilter = filter;
   }
 
   getFilter() {
     return this._currentFilter;
+  }
+
+  changeFilter(updateType, newFilter) {
+    this._currentFilter = newFilter;
+    this._notify(updateType);
   }
 }

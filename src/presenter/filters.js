@@ -1,5 +1,6 @@
 import FiltersView from '../view/filters';
 import {render} from '../utils/render';
+import {UpdateType} from '../const';
 
 export default class Filters {
   constructor(container, filtersModel) {
@@ -19,7 +20,6 @@ export default class Filters {
   }
 
   _handleFilterChange(evt) {
-    this._filtersModel.setFilter(evt.target.value);
-    console.log(this.getCurrentFilter());
+    this._filtersModel.changeFilter(UpdateType.MAJOR, evt.target.value);
   }
 }

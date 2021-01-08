@@ -2,10 +2,10 @@ import SortView from '../view/sort';
 import EventsListView from '../view/events-list';
 import NoPointsMessage from '../view/no-points-message';
 import PointPresenter from '../presenter/point';
-import {render} from '../utils/render';
+import {render, removeElement} from '../utils/render';
 import {sortByDay, sortByTime, sortByPrice} from '../utils/sort';
 import {RenderPositions} from '../const';
-import {SortType, FilterType} from '../const';
+import {SortType, FilterType, UserAction, UpdateType} from '../const';
 import dayjs from 'dayjs';
 
 export default class Trip {
@@ -13,7 +13,7 @@ export default class Trip {
     this._pointsModel = pointsModel;
     this._filtersModel = filtersModel;
     this._eventsContainer = eventsContainer;
-    this._sortComponent = new SortView();
+    this._sortComponent = null;
     this._eventsListComponent = new EventsListView();
     this._noPointsMessageComponent = new NoPointsMessage();
     this._currentSortType = SortType.DAY;
@@ -28,6 +28,7 @@ export default class Trip {
     this._offersToTypes = offersToTypes;
     this._infoToDestinations = infoToDestinations;
     this._pointsModel.addObserver(this._handleViewChange);
+    this._filtersModel.addObserver(this._handleViewChange);
     render(this._eventsContainer, this._eventsListComponent);
     this._renderEventsList();
   }
@@ -37,6 +38,10 @@ export default class Trip {
   }
 
   _renderSort() {
+    if (this._sortComponent !== null) {
+      removeElement(this._sortComponent);
+    }
+    this._sortComponent = new SortView();
     render(this._eventsContainer, this._sortComponent, RenderPositions.AFTERBEGIN);
     this._sortComponent.setSortClickHandler(this._handleSortChange);
   }
@@ -87,12 +92,26 @@ export default class Trip {
     return points;
   }
 
-  _handlePointChange(updatedPoint) {
-    this._pointsModel.updatePoints(updatedPoint);
+  _handlePointChange(userAction, updateType, updatedPoint) {
+    switch (userAction) {
+      case UserAction.UPDATE_POINT:
+        this._pointsModel.updatePoints(updateType, updatedPoint);
+        break;
+    }
   }
 
-  _handleViewChange(updatedPoint) {
-    this._pointPresenters[updatedPoint.id].init(updatedPoint);
+  _handleViewChange(updateType, updatedPoint) {
+    switch (updateType) {
+      case UpdateType.MINOR:
+        this._pointPresenters[updatedPoint.id].init(updatedPoint);
+        break;
+      case UpdateType.MAJOR:
+        this._currentSortType = SortType.DAY;
+        this._renderSort();
+        this._clearPointsList();
+        this._renderPoints();
+        break;
+    }
   }
 
   _handleModeChange() {
