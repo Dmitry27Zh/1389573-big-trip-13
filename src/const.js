@@ -16,4 +16,10 @@ const SortType = {
   PRICE: `price`,
 };
 
-export {TYPES, DESTINATIONS, RenderPositions, Mode, SortType};
+const FilterType = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`,
+};
+
+export {TYPES, DESTINATIONS, RenderPositions, Mode, SortType, FilterType};
