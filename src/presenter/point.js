@@ -16,6 +16,7 @@ export default class Point {
     this._handleCloseFormCLick = this._handleCloseFormCLick.bind(this);
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._escKeydownHandler = this._escKeydownHandler.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
@@ -30,6 +31,7 @@ export default class Point {
     this._pointComponent.setEditClickHandler(this._handleEditClick);
     this._pointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._editPointComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._editPointComponent.setDeleteClickHandler(this._handleDeleteClick);
     if (lastPointComponent === null || lastEditPointComponent === null) {
       render(this._pointContainer, this._pointComponent);
       return;
@@ -82,14 +84,18 @@ export default class Point {
     document.removeEventListener(`keydown`, this._escKeydownHandler);
   }
 
+  _handleDeleteClick(deletedPoint) {
+    this._changeData(UserAction.DELETE_POINT, UpdateType.MINOR, deletedPoint);
+  }
+
   _handleFormSubmit(editedPoint) {
     this._replaceFormToPoint();
     document.removeEventListener(`keydown`, this._escKeydownHandler);
-    this._changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, editedPoint);
+    this._changeData(UserAction.UPDATE_POINT, UpdateType.PATCH, editedPoint);
   }
 
   _handleFavoriteClick() {
-    this._changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, Object.assign({}, this._point, {isFavorite: !this._point.isFavorite}));
+    this._changeData(UserAction.UPDATE_POINT, UpdateType.PATCH, Object.assign({}, this._point, {isFavorite: !this._point.isFavorite}));
   }
 
   destroy() {

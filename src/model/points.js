@@ -1,5 +1,5 @@
 import Observer from '../utils/observer';
-import {updateItem} from '../utils/common';
+import {updateItem, deleteItem} from '../utils/common';
 
 export default class Points extends Observer {
   constructor() {
@@ -15,8 +15,13 @@ export default class Points extends Observer {
     return this._points;
   }
 
-  updatePoints(updateType, updatedPoint) {
-    this._points = updateItem(this._points, updatedPoint);
-    this._notify(updateType, updatedPoint);
+  updatePoint(updateType, update) {
+    this._points = updateItem(this._points, update);
+    this._notify(updateType, update);
+  }
+
+  deletePoint(updateType, update) {
+    this._points = deleteItem(this._points, update);
+    this._notify(updateType);
   }
 }

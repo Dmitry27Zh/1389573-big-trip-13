@@ -134,6 +134,7 @@ export default class EditPoint extends Smart {
     this._data = EditPoint.parsePointToData(point);
     this._infoToDestinations = infoToDestinations;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._closeClickHandler = this._closeClickHandler.bind(this);
     this._typeToggleClickHandler = this._typeToggleClickHandler.bind(this);
     this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
@@ -221,6 +222,11 @@ export default class EditPoint extends Smart {
     this.getElement().querySelector(`.event__input--price`).addEventListener(`change`, this._priceChangeHandler);
   }
 
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EditPoint.parseDataToPoint(this._data));
+  }
+
   _formSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.formSubmit(EditPoint.parseDataToPoint(this._data));
@@ -228,6 +234,11 @@ export default class EditPoint extends Smart {
 
   _closeClickHandler() {
     this._callback.closeClick();
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._deleteClickHandler);
   }
 
   setFormSubmitHandler(callback) {

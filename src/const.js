@@ -31,6 +31,7 @@ const UserAction = {
 };
 
 const UpdateType = {
+  PATCH: `patch`,
   MINOR: `minor`,
   MAJOR: `major`,
 };
