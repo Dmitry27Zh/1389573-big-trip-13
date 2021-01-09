@@ -27,7 +27,7 @@ export default class Point {
     const lastPointComponent = this._pointComponent;
     const lastEditPointComponent = this._editPointComponent;
     this._pointComponent = new PointView(point, this._availableOffers);
-    this._editPointComponent = new EditPointView(point, this._offersToTypes, this._infoToDestinations);
+    this._editPointComponent = new EditPointView(this._offersToTypes, this._infoToDestinations, point);
     this._pointComponent.setEditClickHandler(this._handleEditClick);
     this._pointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._editPointComponent.setFormSubmitHandler(this._handleFormSubmit);
@@ -85,7 +85,7 @@ export default class Point {
   }
 
   _handleDeleteClick(deletedPoint) {
-    this._changeData(UserAction.DELETE_POINT, UpdateType.MINOR, deletedPoint);
+    this._changeData(UserAction.DELETE_POINT, UpdateType.MAJOR, deletedPoint);
   }
 
   _handleFormSubmit(editedPoint) {

@@ -2,11 +2,11 @@ import SortView from '../view/sort';
 import EventsListView from '../view/events-list';
 import NoPointsMessage from '../view/no-points-message';
 import PointPresenter from '../presenter/point';
+import NewPointPresenter from '../presenter/new-point';
 import {render, removeElement} from '../utils/render';
 import {sortByDay, sortByTime, sortByPrice} from '../utils/sort';
 import filter from '../utils/filter';
-import {RenderPositions} from '../const';
-import {SortType, UserAction, UpdateType} from '../const';
+import {RenderPositions, SortType, FilterType, UserAction, UpdateType} from '../const';
 
 export default class Trip {
   constructor(eventsContainer, pointsModel, filtersModel) {
@@ -22,6 +22,7 @@ export default class Trip {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortChange = this._handleSortChange.bind(this);
     this._handleViewChange = this._handleViewChange.bind(this);
+    this._newPointPresenter = new NewPointPresenter(this._eventsListComponent, this._handleUserAction);
   }
 
   init(offersToTypes, infoToDestinations) {
@@ -66,6 +67,12 @@ export default class Trip {
     render(this._eventsListComponent, this._noPointsMessageComponent);
   }
 
+  createNewPoint() {
+    this._currentSortType = SortType.DAY;
+    this._filtersModel.changeFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._newPointPresenter.init(this._offersToTypes, this._infoToDestinations);
+  }
+
   _clearPointsList({resetCurrentSort = false} = {}) {
     Object.values(this._pointPresenters).forEach((presenter) => presenter.destroy());
     this._pointPresenters = {};
@@ -106,6 +113,9 @@ export default class Trip {
       case UserAction.DELETE_POINT:
         this._pointsModel.deletePoint(updateType, update);
         break;
+      case UserAction.ADD_POINT:
+        this._pointsModel.addPoint(updateType, update);
+        break;
     }
   }
 
@@ -116,7 +126,7 @@ export default class Trip {
         break;
       case UpdateType.MINOR:
         this._clearPointsList();
-        this._renderPoints(this._getPoints());
+        this._renderEventsList();
         break;
       case UpdateType.MAJOR:
         this._clearPointsList({resetCurrentSort: true});
@@ -126,6 +136,7 @@ export default class Trip {
   }
 
   _handleModeChange() {
+    this._newPointPresenter.destroy();
     Object.values(this._pointPresenters).forEach((presenter) => presenter.resetView());
   }
 

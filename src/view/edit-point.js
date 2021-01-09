@@ -1,6 +1,7 @@
 import {TYPES} from '../const';
 import dayjs from 'dayjs';
 import {capitalizeFirstLetter} from '../utils/common';
+import generateDate from '../utils/date';
 import Smart from '../view/smart';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
@@ -57,15 +58,17 @@ const defaultPoint = (offersToTypes) => ({
   type: Object.keys(offersToTypes)[0],
   destination: ``,
   date: {
-    start: ``,
-    end: ``,
+    start: dayjs(),
+    end: generateDate(dayjs()),
   },
-  cost: ``,
+  cost: 0,
   offers: [],
+  isFavorite: false,
 });
 
-const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTypes), info) => {
+const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTypes), infoToDestinations) => {
   const {type, destination, date: {start, end}, cost = ``, offers = [], activatedTypeToggle} = point;
+  const info = infoToDestinations[destination];
   return `
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -91,9 +94,7 @@ const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTyp
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
+              ${Object.keys(infoToDestinations).map((availableDestination) => `<option value="${availableDestination}"></option>`).join(``)}
             </datalist>
           </div>
 
@@ -128,7 +129,7 @@ const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTyp
 };
 
 export default class EditPoint extends Smart {
-  constructor(point, offersToTypes, infoToDestinations) {
+  constructor(offersToTypes, infoToDestinations, point = defaultPoint(offersToTypes)) {
     super();
     this._offersToTypes = offersToTypes;
     this._data = EditPoint.parsePointToData(point);
@@ -148,7 +149,7 @@ export default class EditPoint extends Smart {
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._offersToTypes, this._data, this._infoToDestinations[this._data.destination]);
+    return createEditPointTemplate(this._offersToTypes, this._data, this._infoToDestinations);
   }
 
   static parsePointToData(point) {

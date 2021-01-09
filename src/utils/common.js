@@ -25,6 +25,10 @@ export const updateItem = (items, updatedItem) => {
   return [...items.slice(0, index), updatedItem, ...items.slice(index + 1)];
 };
 
+export const addItem = (items, addedItem) => {
+  return [addedItem, ...items];
+};
+
 export const deleteItem = (items, deletedItem) => {
   const index = items.findIndex((item) => item.id === deletedItem.id);
   return [...items.slice(0, index), ...items.slice(index + 1)];

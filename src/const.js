@@ -28,6 +28,8 @@ const FilterType = {
 
 const UserAction = {
   UPDATE_POINT: `update point`,
+  ADD_POINT: `add point`,
+  DELETE_POINT: `delete point`,
 };
 
 const UpdateType = {

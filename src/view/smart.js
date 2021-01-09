@@ -4,7 +4,6 @@ export default class Smart extends Abstract {
   constructor() {
     super();
     this._data = {};
-    this._updatedValues = [];
   }
 
   _updateData(update) {
