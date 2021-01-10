@@ -54,20 +54,22 @@ const createDestinationInfoTemplate = (info) => {
   `;
 };
 
-const defaultPoint = (offersToTypes) => ({
-  type: Object.keys(offersToTypes)[0],
-  destination: ``,
-  date: {
-    start: dayjs(),
-    end: generateDate(dayjs()),
-  },
-  cost: 0,
-  offers: [],
-  isFavorite: false,
-});
+class DefaultPoint {
+  constructor(offersToTypes) {
+    this.type = Object.keys(offersToTypes)[0];
+    this.destination = ``;
+    this.date = {
+      start: dayjs(),
+      end: generateDate(dayjs()),
+    };
+    this.cost = 0;
+    this.offers = [];
+    this.isFavorite = false;
+  }
+}
 
-const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTypes), infoToDestinations) => {
-  const {type, destination, date: {start, end}, cost = ``, offers = [], activatedTypeToggle} = point;
+const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNewPointMode) => {
+  const {type, destination, date: {start, end}, cost = ``, offers = []} = point;
   const info = infoToDestinations[destination];
   return `
     <li class="trip-events__item">
@@ -78,7 +80,7 @@ const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTyp
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${activatedTypeToggle ? `checked` : ``}>
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
@@ -115,23 +117,23 @@ const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTyp
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+          <button class="event__reset-btn" type="reset">${isNewPointMode ? `Cancel` : `Delete`}</button>
+          ${!isNewPointMode ? `<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>` : ``}
         </header>
         <section class="event__details">
-          ${offersToTypes[type] ? createOffersTemplate(offersToTypes[type], offers) : ``}
-          ${info ? createDestinationInfoTemplate(info) : ``}
+            ${offersToTypes[type] ? createOffersTemplate(offersToTypes[type], offers) : ``}
+            ${info ? createDestinationInfoTemplate(info) : ``}
+        </section>
       </form>
     </li>
   `;
 };
 
 export default class EditPoint extends Smart {
-  constructor(offersToTypes, infoToDestinations, point = defaultPoint(offersToTypes)) {
+  constructor(offersToTypes, infoToDestinations, point = new DefaultPoint(offersToTypes)) {
     super();
     this._offersToTypes = offersToTypes;
+    this._isNewPointMode = point instanceof DefaultPoint;
     this._data = EditPoint.parsePointToData(point);
     this._infoToDestinations = infoToDestinations;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
@@ -149,7 +151,7 @@ export default class EditPoint extends Smart {
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._offersToTypes, this._data, this._infoToDestinations);
+    return createEditPointTemplate(this._offersToTypes, this._infoToDestinations, this._data, this._isNewPointMode);
   }
 
   static parsePointToData(point) {
@@ -182,6 +184,18 @@ export default class EditPoint extends Smart {
     this._updateData({date: Object.assign({}, this._data.date, {end: endDate})});
   }
 
+  removeElement() {
+    super.removeElement();
+    if (this._startDatePicker) {
+      this._startDatePicker.destroy();
+      this._startDatePicker = null;
+    }
+    if (this._endDatePicker) {
+      this._endDatePicker.destroy();
+      this._endDatePicker = null;
+    }
+  }
+
   reset(point) {
     this._updateData(EditPoint.parsePointToData(point));
     this._updateElement();
@@ -192,6 +206,7 @@ export default class EditPoint extends Smart {
     this._setDatePickers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setCloseClickHandler(this._callback.closeClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _typeToggleClickHandler({target}) {
@@ -214,7 +229,13 @@ export default class EditPoint extends Smart {
   }
 
   _priceChangeHandler({target}) {
-    this._updateData({cost: +target.value});
+    if (isNaN(target.value)) {
+      target.setCustomValidity(`Enter the number`);
+    } else {
+      this._updateData({cost: +target.value});
+      target.setCustomValidity(``);
+    }
+    target.reportValidity();
   }
 
   _setInnerHandlers() {
