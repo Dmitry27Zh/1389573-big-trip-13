@@ -16,6 +16,6 @@ export default class Filters extends Observer {
 
   changeFilter(updateType, newFilter) {
     this._currentFilter = newFilter;
-    this._notify(updateType);
+    this.notify(updateType);
   }
 }
