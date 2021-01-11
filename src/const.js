@@ -10,4 +10,10 @@ const Mode = {
   EDITING: `EDITING`,
 };
 
-export {TYPES, DESTINATIONS, RenderPositions, Mode};
+const SortType = {
+  DAY: `day`,
+  TIME: `time`,
+  PRICE: `price`,
+};
+
+export {TYPES, DESTINATIONS, RenderPositions, Mode, SortType};
