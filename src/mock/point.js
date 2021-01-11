@@ -1,15 +1,7 @@
-import dayjs from 'dayjs';
 import {TYPES, DESTINATIONS} from '../const';
 import {getRandomInteger, getRandomItem, getRandomArray} from '../utils/common';
+import generateDate from '../utils/date';
 import {nanoid} from 'nanoid';
-
-const generateDate = (date = dayjs()) => {
-  const maxHoursGap = 24;
-  const maxDaysGap = 7;
-  const daysGap = getRandomInteger(maxDaysGap);
-  const hoursGap = getRandomInteger(maxHoursGap);
-  return dayjs(date).add(daysGap, `day`).add(hoursGap, `hour`).toDate();
-};
 
 export const generatePoint = (offersToTypes) => {
   const startDate = generateDate();

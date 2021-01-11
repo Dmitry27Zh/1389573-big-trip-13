@@ -1,6 +1,10 @@
 import {TYPES} from '../const';
 import dayjs from 'dayjs';
-import Abstract from './abstract';
+import {capitalizeFirstLetter} from '../utils/common';
+import generateDate from '../utils/date';
+import Smart from '../view/smart';
+import flatpickr from 'flatpickr';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const createEditEventTypesTemplate = (currentType) => {
   return TYPES.map((type) => `
@@ -50,19 +54,23 @@ const createDestinationInfoTemplate = (info) => {
   `;
 };
 
-const defaultPoint = (offersToTypes) => ({
-  type: Object.keys(offersToTypes)[0],
-  destination: ``,
-  date: {
-    start: ``,
-    end: ``,
-  },
-  cost: ``,
-  offers: [],
-});
+class DefaultPoint {
+  constructor(offersToTypes) {
+    this.type = Object.keys(offersToTypes)[0];
+    this.destination = ``;
+    this.date = {
+      start: dayjs(),
+      end: generateDate(dayjs()),
+    };
+    this.cost = 0;
+    this.offers = [];
+    this.isFavorite = false;
+  }
+}
 
-const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTypes), info) => {
+const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNewPointMode) => {
   const {type, destination, date: {start, end}, cost = ``, offers = []} = point;
+  const info = infoToDestinations[destination];
   return `
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -88,9 +96,7 @@ const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTyp
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
+              ${Object.keys(infoToDestinations).map((availableDestination) => `<option value="${availableDestination}"></option>`).join(``)}
             </datalist>
           </div>
 
@@ -111,40 +117,150 @@ const createEditPointTemplate = (offersToTypes, point = defaultPoint(offersToTyp
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+          <button class="event__reset-btn" type="reset">${isNewPointMode ? `Cancel` : `Delete`}</button>
+          ${!isNewPointMode ? `<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>` : ``}
         </header>
         <section class="event__details">
-          ${offersToTypes[type] ? createOffersTemplate(offersToTypes[type], offers) : ``}
-          ${info ? createDestinationInfoTemplate(info) : ``}
+            ${offersToTypes[type] ? createOffersTemplate(offersToTypes[type], offers) : ``}
+            ${info ? createDestinationInfoTemplate(info) : ``}
+        </section>
       </form>
     </li>
   `;
 };
 
-export default class EditPoint extends Abstract {
-  constructor(point, offersToTypes, info) {
+export default class EditPoint extends Smart {
+  constructor(offersToTypes, infoToDestinations, point = new DefaultPoint(offersToTypes)) {
     super();
     this._offersToTypes = offersToTypes;
-    this._point = point;
-    this._info = info;
+    this._isNewPointMode = point instanceof DefaultPoint;
+    this._data = EditPoint.parsePointToData(point);
+    this._infoToDestinations = infoToDestinations;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._closeClickHandler = this._closeClickHandler.bind(this);
+    this._typeToggleClickHandler = this._typeToggleClickHandler.bind(this);
+    this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
+    this._priceChangeHandler = this._priceChangeHandler.bind(this);
+    this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
+    this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
+    this._setInnerHandlers();
+    this._startDatePicker = null;
+    this._endDatePicker = null;
+    this._setDatePickers();
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._offersToTypes, this._point, this._info);
+    return createEditPointTemplate(this._offersToTypes, this._infoToDestinations, this._data, this._isNewPointMode);
+  }
+
+  static parsePointToData(point) {
+    return Object.assign({}, point);
+  }
+
+  static parseDataToPoint(data) {
+    let point = Object.assign({}, data);
+    return point;
+  }
+
+  _setDatePickers() {
+    if (this._startDatePicker) {
+      this._startDatePicker.destroy();
+      this._startDatePicker = null;
+    }
+    if (this._endDatePicker) {
+      this._endDatePicker.destroy();
+      this._endDatePicker = null;
+    }
+    this._startDatePicker = flatpickr(this.getElement().querySelector(`#event-start-time-1`), {dateFormat: `d/m/y H:i`, enableTime: true, onChange: this._startDateChangeHandler});
+    this._endDatePicker = flatpickr(this.getElement().querySelector(`#event-end-time-1`), {dateFormat: `d/m/y H:i`, enableTime: true, onChange: this._endDateChangeHandler});
+  }
+
+  _startDateChangeHandler([startDate]) {
+    this._updateData({date: Object.assign({}, this._data.date, {start: startDate})});
+  }
+
+  _endDateChangeHandler([endDate]) {
+    this._updateData({date: Object.assign({}, this._data.date, {end: endDate})});
+  }
+
+  removeElement() {
+    super.removeElement();
+    if (this._startDatePicker) {
+      this._startDatePicker.destroy();
+      this._startDatePicker = null;
+    }
+    if (this._endDatePicker) {
+      this._endDatePicker.destroy();
+      this._endDatePicker = null;
+    }
+  }
+
+  reset(point) {
+    this._updateData(EditPoint.parsePointToData(point));
+    this._updateElement();
+  }
+
+  _restoreHandlers() {
+    this._setInnerHandlers();
+    this._setDatePickers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setCloseClickHandler(this._callback.closeClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
+  }
+
+  _typeToggleClickHandler({target}) {
+    this._updateData({
+      type: capitalizeFirstLetter(target.value),
+      offers: [],
+    });
+    this._updateElement();
+  }
+
+  _destinationToggleHandler({target}) {
+    if (Object.keys(this._infoToDestinations).some((destination) => destination === target.value)) {
+      this._updateData({destination: target.value});
+      this._updateElement();
+      target.setCustomValidity(``);
+    } else {
+      target.setCustomValidity(`Wrong destination`);
+    }
+    target.reportValidity();
+  }
+
+  _priceChangeHandler({target}) {
+    if (isNaN(target.value)) {
+      target.setCustomValidity(`Enter the number`);
+    } else {
+      this._updateData({cost: +target.value});
+      target.setCustomValidity(``);
+    }
+    target.reportValidity();
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._typeToggleClickHandler);
+    this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationToggleHandler);
+    this.getElement().querySelector(`.event__input--price`).addEventListener(`change`, this._priceChangeHandler);
+  }
+
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EditPoint.parseDataToPoint(this._data));
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(EditPoint.parseDataToPoint(this._data));
   }
 
   _closeClickHandler() {
     this._callback.closeClick();
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._deleteClickHandler);
   }
 
   setFormSubmitHandler(callback) {
