@@ -1,5 +1,5 @@
 import {RenderPositions} from '../const';
-import Abstract from '../views/abstract';
+import Abstract from '../view/abstract';
 
 export const render = (container, element, place = RenderPositions.BEFOREEND) => {
   if (container instanceof Abstract) {
@@ -39,4 +39,12 @@ export const createElement = (template) => {
   const node = document.createElement(`div`);
   node.innerHTML = template;
   return node.firstElementChild;
+};
+
+export const removeElement = (component) => {
+  if (!(component instanceof Abstract)) {
+    throw new Error(`Can remove only component`);
+  }
+  component.getElement().remove();
+  component.removeElement();
 };

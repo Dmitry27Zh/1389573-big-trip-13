@@ -19,3 +19,8 @@ export const getRandomArray = (array) => {
   }
   return currentArray.slice(0, getRandomInteger(1, 3));
 };
+
+export const updateItem = (items, updatedItem) => {
+  const index = items.findIndex((item) => item.id === updatedItem.id);
+  return [...items.slice(0, index), updatedItem, ...items.slice(index + 1)];
+};
