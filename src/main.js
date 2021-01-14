@@ -9,6 +9,7 @@ import {generateOffersToTypes} from './mock/offers-to-types';
 import {generateInfoToDestinations} from './mock/info-to-destinations';
 import {render} from './utils/render';
 import {RenderPositions, FilterType} from './const';
+import Api from './api';
 
 const POINTS_QUANTITY = 25;
 
@@ -39,4 +40,12 @@ tripPresenter.init(offersToTypes, infoToDestinations);
 
 document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
   tripPresenter.createNewPoint();
+});
+
+const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
+const AUTHORIZATION = `Basic skvsakscsndkkdA`;
+
+const api = new Api(END_POINT, AUTHORIZATION);
+api.getPoints().then((points) => {
+  console.log(points)
 });
