@@ -43,5 +43,6 @@ export default class Points extends Observer {
     delete adaptedPoint.is_favorite;
     delete adaptedPoint.date_from;
     delete adaptedPoint.date_to;
+    return adaptedPoint;
   }
 }

@@ -27,6 +27,7 @@ api.getPoints().then((response) => {
   console.log(response)
 });
 api.getDestinations().then((destinations) => console.log(destinations));
+api.getOffers().then((offers) => console.log(offers));
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
