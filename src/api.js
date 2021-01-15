@@ -1,3 +1,5 @@
+import DestinationsModel from './model/destinations';
+
 const Method = {
   GET: `GET`,
   PUT: `PUT`,
@@ -15,7 +17,7 @@ export default class Api {
   }
 
   getDestinations() {
-    return this._load({url: `destinations`}).then(Api.toJSON);
+    return this._load({url: `destinations`}).then(Api.toJSON).then(DestinationsModel.adaptToClient);
   }
 
   getPoints() {

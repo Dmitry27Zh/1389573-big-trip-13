@@ -8,7 +8,6 @@ export default class Destinations extends Observer {
 
   setDestinations(destinations) {
     this._destinations = destinations;
-    console.log(Destinations.adaptToClient(destinations));
   }
 
   static adaptToClient(destinations) {
