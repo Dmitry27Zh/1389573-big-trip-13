@@ -29,4 +29,19 @@ export default class Points extends Observer {
     this._points = deleteItem(this._points, update);
     this.notify(updateType);
   }
+
+  static adaptToClient(point) {
+    const adaptedPoint = Object.assign({}, point, {
+      cost: point.base_price,
+      isFavorite: point.is_favorite,
+      date: {
+        start: new Date(point.date_from),
+        end: new Date(point.date_to),
+      }
+    });
+    delete adaptedPoint.base_price;
+    delete adaptedPoint.is_favorite;
+    delete adaptedPoint.date_from;
+    delete adaptedPoint.date_to;
+  }
 }
