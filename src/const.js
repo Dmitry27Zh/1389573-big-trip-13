@@ -1,7 +1,5 @@
 import {getRandomArray} from './utils/common';
 
-const TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
-const DESTINATIONS = [`Amsterdam`, `Geneva`, `Chamonix`];
 const MaxTimeGap = {
   DAYS: 7,
   HOURS: 24,
@@ -58,4 +56,4 @@ class DEFAULT_POINT {
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
 const AUTHORIZATION = `Basic skvsakscsndkkdA`;
 
-export {TYPES, DESTINATIONS, MaxTimeGap, RenderPositions, Mode, SortType, FilterType, UserAction, UpdateType, END_POINT, AUTHORIZATION, DEFAULT_POINT};
+export {MaxTimeGap, RenderPositions, Mode, SortType, FilterType, UserAction, UpdateType, END_POINT, AUTHORIZATION, DEFAULT_POINT};
