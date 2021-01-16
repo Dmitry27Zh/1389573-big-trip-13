@@ -37,7 +37,12 @@ export default class Points extends Observer {
       date: {
         start: new Date(point.date_from),
         end: new Date(point.date_to),
-      }
+      },
+      offers: point.offers.map((offer) => {
+        const adaptedOffer = Object.assign({}, offer, {name: offer.title});
+        delete adaptedOffer.title;
+        return adaptedOffer;
+      })
     });
     delete adaptedPoint.base_price;
     delete adaptedPoint.is_favorite;
