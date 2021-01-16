@@ -36,6 +36,10 @@ const UpdateType = {
   PATCH: `patch`,
   MINOR: `minor`,
   MAJOR: `major`,
+  INIT: `init`,
 };
 
-export {TYPES, DESTINATIONS, MaxTimeGap, RenderPositions, Mode, SortType, FilterType, UserAction, UpdateType};
+const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
+const AUTHORIZATION = `Basic skvsakscsndkkdA`;
+
+export {TYPES, DESTINATIONS, MaxTimeGap, RenderPositions, Mode, SortType, FilterType, UserAction, UpdateType, END_POINT, AUTHORIZATION};

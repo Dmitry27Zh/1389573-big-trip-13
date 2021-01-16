@@ -3,28 +3,22 @@ import FiltersPresenter from './presenter/filters';
 import TripPresenter from './presenter/trip';
 import FiltersModel from './model/filters';
 import DestinationsModel from './model/destinations';
+import OffersModel from './model/offers';
 import PointsModel from './model/points';
 import TripMenuView from './view/menu';
 import {render} from './utils/render';
-import {FilterType} from './const';
+import {UpdateType, FilterType, END_POINT, AUTHORIZATION} from './const';
 import Api from './api';
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 const tripEventsElement = document.querySelector(`.trip-events`);
 
+const destinationsModel = new DestinationsModel();
+const offersModel = new OffersModel();
 const pointsModel = new PointsModel();
 const filtersModel = new FiltersModel();
 filtersModel.setFilter(FilterType.EVERYTHING);
-
-const destinationsModel = new DestinationsModel();
-
-const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
-const AUTHORIZATION = `Basic skvsakscsndkkdA`;
-const api = new Api(END_POINT, AUTHORIZATION);
-api.getPoints().then((points) => {
-  pointsModel.setPoints(points);
-});
 
 const infoPresenter = new InfoPresenter(tripMainElement, pointsModel);
 infoPresenter.init();
@@ -34,9 +28,16 @@ render(tripControlsElement, new TripMenuView());
 const filtersPresenter = new FiltersPresenter(tripControlsElement, filtersModel);
 filtersPresenter.init();
 
-const tripPresenter = new TripPresenter(tripEventsElement, pointsModel, filtersModel);
+const tripPresenter = new TripPresenter(tripEventsElement, destinationsModel, offersModel, pointsModel, filtersModel);
+tripPresenter.init();
 
-Promise.all([api.getOffers, api.getDestinations]).then(([offersToTypes, infoToDestinations]) => tripPresenter.init(offersToTypes, infoToDestinations));
+const api = new Api(END_POINT, AUTHORIZATION);
+
+Promise.all([api.getDestinations(), api.getOffers(), api.getPoints()]).then(([infoToDestinations, offersToTypes, points]) => {
+  destinationsModel.setDestinations(infoToDestinations);
+  offersModel.setOffers(offersToTypes);
+  pointsModel.setPoints(UpdateType.INIT, points);
+});
 
 document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
   tripPresenter.createNewPoint();

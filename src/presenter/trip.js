@@ -1,6 +1,7 @@
 import SortView from '../view/sort';
 import EventsListView from '../view/events-list';
 import NoPointsMessage from '../view/no-points-message';
+import LoadingView from '../view/loading';
 import PointPresenter from '../presenter/point';
 import NewPointPresenter from '../presenter/new-point';
 import {render, removeElement} from '../utils/render';
@@ -9,13 +10,17 @@ import filter from '../utils/filter';
 import {RenderPositions, SortType, FilterType, UserAction, UpdateType} from '../const';
 
 export default class Trip {
-  constructor(eventsContainer, pointsModel, filtersModel) {
+  constructor(eventsContainer, destinationsModel, offersModel, pointsModel, filtersModel) {
+    this._destinationsModel = destinationsModel;
+    this._offersModel = offersModel;
     this._pointsModel = pointsModel;
     this._filtersModel = filtersModel;
     this._eventsContainer = eventsContainer;
     this._sortComponent = null;
     this._eventsListComponent = new EventsListView();
     this._noPointsMessageComponent = null;
+    this._loadingComponent = new LoadingView();
+    this._isLoading = true;
     this._currentSortType = SortType.DAY;
     this._pointPresenters = {};
     this._handleUserAction = this._handleUserAction.bind(this);
@@ -25,13 +30,19 @@ export default class Trip {
     this._newPointPresenter = new NewPointPresenter(this._eventsListComponent, this._handleUserAction);
   }
 
-  init(offersToTypes, infoToDestinations) {
-    this._offersToTypes = offersToTypes;
-    this._infoToDestinations = infoToDestinations;
+  init() {
     this._pointsModel.addObserver(this._handleViewChange);
     this._filtersModel.addObserver(this._handleViewChange);
     render(this._eventsContainer, this._eventsListComponent);
     this._renderEventsList();
+  }
+
+  _getOffersToType() {
+    this._offersToTypes = this._offersModel.getOffers();
+  }
+
+  _getInfoToDestinations() {
+    this._infoToDestinations = this._destinationsModel.getDestinations();
   }
 
   _getPoints() {
@@ -62,6 +73,10 @@ export default class Trip {
     });
   }
 
+  _renderLoading() {
+    render(this._eventsContainer, this._loadingComponent);
+  }
+
   _renderNoPoint() {
     this._noPointsMessageComponent = new NoPointsMessage();
     render(this._eventsListComponent, this._noPointsMessageComponent);
@@ -86,6 +101,10 @@ export default class Trip {
   }
 
   _renderEventsList() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
     const points = this._getPoints();
     if (points.length === 0) {
       this._renderNoPoint();
@@ -130,6 +149,13 @@ export default class Trip {
         break;
       case UpdateType.MAJOR:
         this._clearPointsList({resetCurrentSort: true});
+        this._renderEventsList();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        removeElement(this._loadingComponent);
+        this._getInfoToDestinations();
+        this._getOffersToType();
         this._renderEventsList();
         break;
     }

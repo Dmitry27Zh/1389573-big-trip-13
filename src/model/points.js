@@ -7,8 +7,9 @@ export default class Points extends Observer {
     this._points = [];
   }
 
-  setPoints(points) {
+  setPoints(updateType, points) {
     this._points = points.slice();
+    this.notify(updateType);
   }
 
   getPoints() {
@@ -34,6 +35,7 @@ export default class Points extends Observer {
     const adaptedPoint = Object.assign({}, point, {
       cost: point.base_price,
       isFavorite: point.is_favorite,
+      destination: point.destination.name,
       date: {
         start: new Date(point.date_from),
         end: new Date(point.date_to),

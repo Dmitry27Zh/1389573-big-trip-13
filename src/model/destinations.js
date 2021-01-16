@@ -10,6 +10,10 @@ export default class Destinations extends Observer {
     this._destinations = destinations;
   }
 
+  getDestinations() {
+    return this._destinations;
+  }
+
   static adaptToClient(destinations) {
     const entries = destinations.map((destination) => {
       return [destination.name, {description: destination.description, pictures: destination.pictures}];
