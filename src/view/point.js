@@ -1,8 +1,7 @@
 import dayjs from 'dayjs';
 import Abstract from './abstract';
 
-const createOfferTemplate = (allOffers, offer) => {
-  const {name, price} = allOffers[offer];
+const createOfferTemplate = ({name, price}) => {
   return `
     <li class="event__offer">
       <span class="event__offer-title">${name}</span>
@@ -34,7 +33,7 @@ const createTimeTemplate = (start, end) => {
   `;
 };
 
-const createPointTemplate = (point, availableOffers) => {
+const createPointTemplate = (point) => {
   const {type, destination, date: {start, end}, cost, offers, isFavorite} = point;
   return `
     <li class="trip-events__item">
@@ -52,7 +51,7 @@ const createPointTemplate = (point, availableOffers) => {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-            ${offers.map((offer) => createOfferTemplate(availableOffers, offer)).join(``)}
+            ${offers.map((offer) => createOfferTemplate(offer)).join(``)}
         </ul>
         <button class="event__favorite-btn ${isFavorite ? `event__favorite-btn--active` : ``}" type="button">
           <span class="visually-hidden">Add to favorite</span>
@@ -69,16 +68,15 @@ const createPointTemplate = (point, availableOffers) => {
 };
 
 export default class Point extends Abstract {
-  constructor(point, availableOffers) {
+  constructor(point) {
     super();
     this._point = point;
-    this._availableOffers = availableOffers;
     this._editClickHandler = this._editClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   getTemplate() {
-    return createPointTemplate(this._point, this._availableOffers);
+    return createPointTemplate(this._point);
   }
 
   _editClickHandler(evt) {

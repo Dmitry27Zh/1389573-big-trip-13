@@ -1,6 +1,6 @@
 import {TYPES} from '../const';
 import dayjs from 'dayjs';
-import {capitalizeFirstLetter} from '../utils/common';
+import {capitalizeFirstLetter, compareObjects} from '../utils/common';
 import generateDate from '../utils/date';
 import Smart from '../view/smart';
 import flatpickr from 'flatpickr';
@@ -16,8 +16,8 @@ const createEditEventTypesTemplate = (currentType) => {
   `).join(``);
 };
 
-const isOfferApplied = (appliedOffers, index) => {
-  return appliedOffers.some((appliedOffer) => appliedOffer === index);
+const isOfferApplied = (appliedOffers, offer) => {
+  return appliedOffers.some((appliedOffer) => compareObjects(appliedOffer, offer));
 };
 
 const createOffersTemplate = (allOffers, appliedOffers) => {
@@ -25,18 +25,20 @@ const createOffersTemplate = (allOffers, appliedOffers) => {
   <section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-    ${allOffers.map(({name, price}, index) => `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}-${name}" type="checkbox" name="event-offer-${name}"
-    ${isOfferApplied(appliedOffers, index) ? `checked` : ``}>
-    <label class="event__offer-label" for="event-offer-${index}-${name}">
-      <span class="event__offer-title">${name}</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${price}</span>
-    </label>
-    </div>`).join(``)}
+    ${allOffers.map((offer, index) => {
+    const {name, price} = offer;
+    return `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}-${name}" type="checkbox" name="event-offer-${name}"
+      ${isOfferApplied(appliedOffers, offer) ? `checked` : ``}>
+      <label class="event__offer-label" for="event-offer-${index}-${name}">
+        <span class="event__offer-title">${name}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${price}</span>
+      </label>
+      </div>`;
+  }).join(``)}
     </div>
-  </section>
-  `;
+  </section>`;
 };
 
 const createDestinationInfoTemplate = (info) => {

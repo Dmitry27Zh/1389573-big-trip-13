@@ -37,3 +37,7 @@ export const deleteItem = (items, deletedItem) => {
 export const capitalizeFirstLetter = (word) => {
   return `${word[0].toUpperCase()}${word.slice(1)}`;
 };
+
+export const compareObjects = (first, second) => {
+  return Object.keys(first).every((key) => first[key] === second[key]);
+};

@@ -26,7 +26,7 @@ export default class Point {
     this._availableOffers = this._offersToTypes[point.type];
     const lastPointComponent = this._pointComponent;
     const lastEditPointComponent = this._editPointComponent;
-    this._pointComponent = new PointView(point, this._availableOffers);
+    this._pointComponent = new PointView(point);
     this._editPointComponent = new EditPointView(this._offersToTypes, this._infoToDestinations, point);
     this._pointComponent.setEditClickHandler(this._handleEditClick);
     this._pointComponent.setFavoriteClickHandler(this._handleFavoriteClick);

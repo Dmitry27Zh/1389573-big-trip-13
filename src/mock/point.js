@@ -16,7 +16,7 @@ export const generatePoint = (offersToTypes) => {
       end: generateDate(startDate),
     },
     cost: getRandomInteger(100, 300),
-    offers: getRandomArray(offersToTypes[type].map((el, index) => index)),
+    offers: getRandomArray(offersToTypes[type]),
     isFavorite: Boolean(getRandomInteger(0, 1)),
   };
 };
