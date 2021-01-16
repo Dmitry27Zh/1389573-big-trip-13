@@ -18,6 +18,9 @@ const destinationsModel = new DestinationsModel();
 const offersModel = new OffersModel();
 const pointsModel = new PointsModel();
 const filtersModel = new FiltersModel();
+
+const api = new Api(END_POINT, AUTHORIZATION);
+
 filtersModel.setFilter(FilterType.EVERYTHING);
 
 const infoPresenter = new InfoPresenter(tripMainElement, pointsModel);
@@ -28,12 +31,11 @@ render(tripControlsElement, new TripMenuView());
 const filtersPresenter = new FiltersPresenter(tripControlsElement, filtersModel);
 filtersPresenter.init();
 
-const tripPresenter = new TripPresenter(tripEventsElement, destinationsModel, offersModel, pointsModel, filtersModel);
+const tripPresenter = new TripPresenter(tripEventsElement, destinationsModel, offersModel, pointsModel, filtersModel, api);
 tripPresenter.init();
 
-const api = new Api(END_POINT, AUTHORIZATION);
-
 Promise.all([api.getDestinations(), api.getOffers(), api.getPoints()]).then(([infoToDestinations, offersToTypes, points]) => {
+
   destinationsModel.setDestinations(infoToDestinations);
   offersModel.setOffers(offersToTypes);
   pointsModel.setPoints(UpdateType.INIT, points);

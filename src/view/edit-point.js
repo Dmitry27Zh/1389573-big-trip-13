@@ -1,7 +1,6 @@
-import {TYPES} from '../const';
+import {TYPES, DEFAULT_POINT} from '../const';
 import dayjs from 'dayjs';
 import {capitalizeFirstLetter, compareObjects} from '../utils/common';
-import generateDate from '../utils/date';
 import Smart from '../view/smart';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
@@ -56,23 +55,8 @@ const createDestinationInfoTemplate = (info) => {
   `;
 };
 
-class DefaultPoint {
-  constructor(offersToTypes) {
-    this.type = Object.keys(offersToTypes)[0];
-    this.destination = ``;
-    this.date = {
-      start: dayjs(),
-      end: generateDate(dayjs()),
-    };
-    this.cost = 0;
-    this.offers = [];
-    this.isFavorite = false;
-  }
-}
-
-const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNewPointMode) => {
-  const {type, destination, date: {start, end}, cost = ``, offers = []} = point;
-  const info = infoToDestinations[destination];
+const createEditPointTemplate = (availableOffers, availableDestinations, info, point, isNewPointMode) => {
+  const {type, destination, date: {start, end}, cost, offers} = point;
   return `
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -98,7 +82,7 @@ const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNew
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
             <datalist id="destination-list-1">
-              ${Object.keys(infoToDestinations).map((availableDestination) => `<option value="${availableDestination}"></option>`).join(``)}
+              ${availableDestinations.map((availableDestination) => `<option value="${availableDestination}"></option>`).join(``)}
             </datalist>
           </div>
 
@@ -123,7 +107,7 @@ const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNew
           ${!isNewPointMode ? `<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>` : ``}
         </header>
         <section class="event__details">
-            ${offersToTypes[type] ? createOffersTemplate(offersToTypes[type], offers) : ``}
+            ${availableOffers ? createOffersTemplate(availableOffers, offers) : ``}
             ${info ? createDestinationInfoTemplate(info) : ``}
         </section>
       </form>
@@ -132,12 +116,12 @@ const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNew
 };
 
 export default class EditPoint extends Smart {
-  constructor(offersToTypes, infoToDestinations, point = new DefaultPoint(offersToTypes)) {
+  constructor(offersToTypes, infoToDestinations, point = new DEFAULT_POINT(Object.keys(offersToTypes)[0], Object.keys(infoToDestinations)[0], Object.values(offersToTypes)[0])) {
     super();
     this._offersToTypes = offersToTypes;
-    this._isNewPointMode = point instanceof DefaultPoint;
-    this._data = EditPoint.parsePointToData(point);
     this._infoToDestinations = infoToDestinations;
+    this._isNewPointMode = point instanceof DEFAULT_POINT;
+    this._data = EditPoint.parsePointToData(point);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._closeClickHandler = this._closeClickHandler.bind(this);
@@ -153,7 +137,7 @@ export default class EditPoint extends Smart {
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._offersToTypes, this._infoToDestinations, this._data, this._isNewPointMode);
+    return createEditPointTemplate(this._offersToTypes[this._data.type], Object.keys(this._infoToDestinations), this._infoToDestinations[this._data.destination], this._data, this._isNewPointMode);
   }
 
   static parsePointToData(point) {

@@ -10,11 +10,12 @@ import filter from '../utils/filter';
 import {RenderPositions, SortType, FilterType, UserAction, UpdateType} from '../const';
 
 export default class Trip {
-  constructor(eventsContainer, destinationsModel, offersModel, pointsModel, filtersModel) {
+  constructor(eventsContainer, destinationsModel, offersModel, pointsModel, filtersModel, api) {
     this._destinationsModel = destinationsModel;
     this._offersModel = offersModel;
     this._pointsModel = pointsModel;
     this._filtersModel = filtersModel;
+    this._api = api;
     this._eventsContainer = eventsContainer;
     this._sortComponent = null;
     this._eventsListComponent = new EventsListView();
@@ -62,14 +63,14 @@ export default class Trip {
   }
 
   _renderPoint(eventPoint) {
-    const pointPresenter = new PointPresenter(this._eventsListComponent, this._offersToTypes, this._infoToDestinations, this._handleUserAction, this._handleModeChange);
-    pointPresenter.init(eventPoint);
+    const pointPresenter = new PointPresenter(this._eventsListComponent, this._handleUserAction, this._handleModeChange);
+    pointPresenter.init(eventPoint, this._offersToTypes, this._infoToDestinations);
     this._pointPresenters[eventPoint.id] = pointPresenter;
   }
 
   _renderPoints(points) {
     points.forEach((point) => {
-      this._renderPoint(point, this._infoToDestinations[point.destination]);
+      this._renderPoint(point);
     });
   }
 
@@ -127,7 +128,7 @@ export default class Trip {
   _handleUserAction(userAction, updateType, update) {
     switch (userAction) {
       case UserAction.UPDATE_POINT:
-        this._pointsModel.updatePoint(updateType, update);
+        this._api.updatePoint(update, this._infoToDestinations).then((response) => this._pointsModel.updatePoint(updateType, response));
         break;
       case UserAction.DELETE_POINT:
         this._pointsModel.deletePoint(updateType, update);
@@ -141,7 +142,7 @@ export default class Trip {
   _handleViewChange(updateType, update) {
     switch (updateType) {
       case UpdateType.PATCH:
-        this._pointPresenters[update.id].init(update);
+        this._pointPresenters[update.id].init(update, this._offersToTypes, this._infoToDestinations);
         break;
       case UpdateType.MINOR:
         this._clearPointsList();

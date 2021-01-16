@@ -52,4 +52,23 @@ export default class Points extends Observer {
     delete adaptedPoint.date_to;
     return adaptedPoint;
   }
+
+  static adaptToServer(point, infoToDestinations) {
+    const adaptedPoint = Object.assign({}, point, {
+      "base_price": point.cost,
+      "is_favorite": point.isFavorite,
+      "destination": Object.assign({}, infoToDestinations[point.destination], {name: point.destination}),
+      "date_from": point.date.start.toISOString(),
+      "date_to": point.date.end.toISOString(),
+      "offers": point.offers.map((offer) => {
+        const adaptedOffer = Object.assign({}, offer, {title: offer.name});
+        delete adaptedOffer.name;
+        return adaptedOffer;
+      })
+    });
+    delete adaptedPoint.cost;
+    delete adaptedPoint.isFavorite;
+    delete adaptedPoint.date;
+    return adaptedPoint;
+  }
 }
