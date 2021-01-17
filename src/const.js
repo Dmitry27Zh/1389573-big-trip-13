@@ -1,5 +1,3 @@
-import {getRandomArray} from './utils/common';
-
 const MaxTimeGap = {
   DAYS: 7,
   HOURS: 24,
@@ -39,21 +37,34 @@ const UpdateType = {
   INIT: `init`,
 };
 
-class DEFAULT_POINT {
-  constructor(type, destination, allOffers) {
-    this.type = type;
-    this.destination = destination;
-    this.date = {
-      start: new Date(`2019-07-10T22:55:56.845Z`),
-      end: new Date(`2019-07-11T11:22:13.375Z`),
-    };
-    this.cost = 222;
-    this.offers = getRandomArray(allOffers);
-    this.isFavorite = false;
-  }
-}
+const DEFAULT_POINT = {
+  type: `taxi`,
+  destination: `Chamonix`,
+  date: {
+    start: new Date(`2019-07-10T22:55:56.845Z`),
+    end: new Date(`2019-07-11T11:22:13.375Z`),
+  },
+  cost: 222,
+  offers: [
+    {
+      name: `Choose meal`,
+      price: 180,
+    },
+    {
+      name: `Upgrade to comfort class`,
+      price: 50,
+    }
+  ],
+  isFavorite: false,
+};
 
-const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
 const AUTHORIZATION = `Basic skvsakscsndkkdA`;
 
-export {MaxTimeGap, RenderPositions, Mode, SortType, FilterType, UserAction, UpdateType, END_POINT, AUTHORIZATION, DEFAULT_POINT};
+const Url = {
+  END_POINT: `https://13.ecmascript.pages.academy/big-trip`,
+  POINTS: `points`,
+  DESTINATIONS: `destinations`,
+  OFFERS: `offers`,
+};
+
+export {MaxTimeGap, RenderPositions, Mode, SortType, FilterType, UserAction, UpdateType, DEFAULT_POINT, Url, AUTHORIZATION};

@@ -119,12 +119,13 @@ const createEditPointTemplate = (offersToTypes, infoToDestinations, info, point,
 };
 
 export default class EditPoint extends Smart {
-  constructor(offersToTypes, infoToDestinations, point = new DEFAULT_POINT(Object.keys(offersToTypes)[0], Object.keys(infoToDestinations)[0], Object.values(offersToTypes)[0])) {
+  constructor(offersToTypes, infoToDestinations, point) {
     super();
     this._offersToTypes = offersToTypes;
     this._infoToDestinations = infoToDestinations;
-    this._isNewPointMode = point instanceof DEFAULT_POINT;
-    this._data = EditPoint.parsePointToData(point);
+    this._point = point ? point : DEFAULT_POINT;
+    this._isNewPointMode = point ? false : true;
+    this._data = EditPoint.parsePointToData(this._point);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._closeClickHandler = this._closeClickHandler.bind(this);

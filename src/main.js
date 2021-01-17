@@ -7,7 +7,7 @@ import OffersModel from './model/offers';
 import PointsModel from './model/points';
 import TripMenuView from './view/menu';
 import {render} from './utils/render';
-import {UpdateType, FilterType, END_POINT, AUTHORIZATION} from './const';
+import {UpdateType, FilterType, Url, AUTHORIZATION} from './const';
 import Api from './api';
 
 const tripMainElement = document.querySelector(`.trip-main`);
@@ -19,7 +19,7 @@ const offersModel = new OffersModel();
 const pointsModel = new PointsModel();
 const filtersModel = new FiltersModel();
 
-const api = new Api(END_POINT, AUTHORIZATION);
+const api = new Api(Url.END_POINT, AUTHORIZATION);
 
 filtersModel.setFilter(FilterType.EVERYTHING);
 

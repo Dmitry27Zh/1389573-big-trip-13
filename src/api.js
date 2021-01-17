@@ -1,3 +1,4 @@
+import {Url} from './const';
 import DestinationsModel from './model/destinations';
 import OffersModel from './model/offers';
 import PointsModel from './model/points';
@@ -7,7 +8,7 @@ const Method = {
   PUT: `PUT`,
 };
 
-const successHTTPStatusRange = {
+const successHttpStatusRange = {
   MIN: 200,
   MAX: 299,
 };
@@ -19,19 +20,19 @@ export default class Api {
   }
 
   getDestinations() {
-    return this._load({url: `destinations`}).then(Api.toJSON).then(DestinationsModel.adaptToClient);
+    return this._load({url: Url.DESTINATIONS}).then(Api.toJSON).then(DestinationsModel.adaptToClient);
   }
 
   getOffers() {
-    return this._load({url: `offers`}).then(Api.toJSON).then(OffersModel.adaptToClient);
+    return this._load({url: Url.OFFERS}).then(Api.toJSON).then(OffersModel.adaptToClient);
   }
 
   getPoints() {
-    return this._load({url: `points`}).then(Api.toJSON).then((points) => points.map(PointsModel.adaptToClient));
+    return this._load({url: Url.POINTS}).then(Api.toJSON).then((points) => points.map(PointsModel.adaptToClient));
   }
 
   updatePoint(point, infoToDestinations) {
-    return this._load({url: `points/${point.id}`, method: Method.PUT, body: JSON.stringify(PointsModel.adaptToServer(point, infoToDestinations)), headers: new Headers({"Content-Type": `application/json`})}).then(Api.toJSON).then(PointsModel.adaptToClient);
+    return this._load({url: `${Url.POINTS}/${point.id}`, method: Method.PUT, body: JSON.stringify(PointsModel.adaptToServer(point, infoToDestinations)), headers: new Headers({"Content-Type": `application/json`})}).then(Api.toJSON).then(PointsModel.adaptToClient);
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
@@ -44,7 +45,7 @@ export default class Api {
   }
 
   static checkStatus(response) {
-    if (response.status < successHTTPStatusRange.MIN || response.status > successHTTPStatusRange.MAX) {
+    if (response.status < successHttpStatusRange.MIN || response.status > successHttpStatusRange.MAX) {
       throw new Error(`${response.status}: ${response.statusText}`);
     }
     return response;
