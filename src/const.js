@@ -12,6 +12,11 @@ const Mode = {
   EDITING: `EDITING`,
 };
 
+const State = {
+  SAVING: `saving`,
+  DELETING: `deleting`,
+};
+
 const SortType = {
   DAY: `day`,
   TIME: `time`,
@@ -67,4 +72,4 @@ const Url = {
   OFFERS: `offers`,
 };
 
-export {MaxTimeGap, RenderPositions, Mode, SortType, FilterType, UserAction, UpdateType, DEFAULT_POINT, Url, AUTHORIZATION};
+export {MaxTimeGap, RenderPositions, Mode, State, SortType, FilterType, UserAction, UpdateType, DEFAULT_POINT, Url, AUTHORIZATION};
