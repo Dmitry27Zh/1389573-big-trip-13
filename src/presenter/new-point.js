@@ -1,6 +1,6 @@
 import AddPointView from '../view/add-point';
 import {render, removeElement} from '../utils/render';
-import {RenderPositions, UserAction, UpdateType} from '../const';
+import {RenderPositions, UserAction, UpdateType, State} from '../const';
 
 export default class NewPoint {
   constructor(container, changeData) {
@@ -23,6 +23,17 @@ export default class NewPoint {
     render(this._container, this._newPointComponent, RenderPositions.AFTERBEGIN);
   }
 
+  setViewState(state) {
+    switch (state) {
+      case State.SAVING:
+        this._newPointComponent.updateData({isDisabled: true, isSaving: true});
+        this._newPointComponent.updateElement();
+        break;
+      case State.ABORTING:
+        this._newPointComponent.shake(this._newPointComponent.resetViewState);
+    }
+  }
+
   _escKeydownHandler(evt) {
     if (evt.key === `Esc` || evt.key === `Escape`) {
       evt.preventDefault();
@@ -36,7 +47,6 @@ export default class NewPoint {
 
   _handleFormSubmit(addedPoint) {
     this._changeData(UserAction.ADD_POINT, UpdateType.MAJOR, addedPoint);
-    this.destroy();
   }
 
   destroy() {

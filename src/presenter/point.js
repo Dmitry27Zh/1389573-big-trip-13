@@ -37,7 +37,8 @@ export default class Point {
       replaceElements(this._pointComponent, lastPointComponent);
     }
     if (this._mode === Mode.EDITING) {
-      replaceElements(this._editPointComponent, lastEditPointComponent);
+      replaceElements(this._pointComponent, lastEditPointComponent);
+      this._mode = Mode.DEFAULT;
     }
     removeElement(lastPointComponent);
     removeElement(lastEditPointComponent);
@@ -57,6 +58,21 @@ export default class Point {
   resetView() {
     if (this._mode === Mode.EDITING) {
       this._replaceFormToPoint();
+    }
+  }
+
+  setViewState(state) {
+    switch (state) {
+      case State.SAVING:
+        this._editPointComponent.updateData({isDisabled: true, isSaving: true});
+        this._editPointComponent.updateElement();
+        break;
+      case State.DELETING:
+        this._editPointComponent.updateData({isDisabled: true, isDeleting: true});
+        this._editPointComponent.updateElement();
+        break;
+      case State.ABORTING:
+        this._editPointComponent.shake(this._editPointComponent.resetViewState);
     }
   }
 
@@ -86,7 +102,6 @@ export default class Point {
   }
 
   _handleFormSubmit(editedPoint) {
-    this._replaceFormToPoint();
     document.removeEventListener(`keydown`, this._escKeydownHandler);
     this._changeData(UserAction.UPDATE_POINT, UpdateType.PATCH, editedPoint);
   }

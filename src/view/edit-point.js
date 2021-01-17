@@ -134,6 +134,7 @@ export default class EditPoint extends Smart {
     this._priceChangeHandler = this._priceChangeHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
     this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
+    this.resetViewState = this.resetViewState.bind(this);
     this._setInnerHandlers();
     this._startDatePicker = null;
     this._endDatePicker = null;
@@ -156,6 +157,11 @@ export default class EditPoint extends Smart {
     return point;
   }
 
+  resetViewState() {
+    this.updateData({isDisabled: false, isSaving: false, isDeleting: false});
+    this.updateElement();
+  }
+
   _setDatePickers() {
     if (this._startDatePicker) {
       this._startDatePicker.destroy();
@@ -170,11 +176,11 @@ export default class EditPoint extends Smart {
   }
 
   _startDateChangeHandler([startDate]) {
-    this._updateData({date: Object.assign({}, this._data.date, {start: startDate})});
+    this.updateData({date: Object.assign({}, this._data.date, {start: startDate})});
   }
 
   _endDateChangeHandler([endDate]) {
-    this._updateData({date: Object.assign({}, this._data.date, {end: endDate})});
+    this.updateData({date: Object.assign({}, this._data.date, {end: endDate})});
   }
 
   removeElement() {
@@ -190,8 +196,8 @@ export default class EditPoint extends Smart {
   }
 
   reset(point) {
-    this._updateData(EditPoint.parsePointToData(point));
-    this._updateElement();
+    this.updateData(EditPoint.parsePointToData(point));
+    this.updateElement();
   }
 
   _restoreHandlers() {
@@ -203,17 +209,17 @@ export default class EditPoint extends Smart {
   }
 
   _typeToggleClickHandler({target}) {
-    this._updateData({
+    this.updateData({
       type: target.value,
       offers: [],
     });
-    this._updateElement();
+    this.updateElement();
   }
 
   _destinationToggleHandler({target}) {
     if (Object.keys(this._infoToDestinations).some((destination) => destination === target.value)) {
-      this._updateData({destination: target.value});
-      this._updateElement();
+      this.updateData({destination: target.value});
+      this.updateElement();
       target.setCustomValidity(``);
     } else {
       target.setCustomValidity(`Wrong destination`);
@@ -225,7 +231,7 @@ export default class EditPoint extends Smart {
     if (isNaN(target.value)) {
       target.setCustomValidity(`Enter the number`);
     } else {
-      this._updateData({cost: +target.value});
+      this.updateData({cost: +target.value});
       target.setCustomValidity(``);
     }
     target.reportValidity();
