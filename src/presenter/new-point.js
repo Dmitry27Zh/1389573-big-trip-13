@@ -1,7 +1,6 @@
 import AddPointView from '../view/add-point';
 import {render, removeElement} from '../utils/render';
 import {RenderPositions, UserAction, UpdateType} from '../const';
-import {nanoid} from 'nanoid';
 
 export default class NewPoint {
   constructor(container, changeData) {
@@ -36,7 +35,7 @@ export default class NewPoint {
   }
 
   _handleFormSubmit(addedPoint) {
-    this._changeData(UserAction.ADD_POINT, UpdateType.MAJOR, Object.assign({id: nanoid()}, addedPoint));
+    this._changeData(UserAction.ADD_POINT, UpdateType.MAJOR, addedPoint);
     this.destroy();
   }
 

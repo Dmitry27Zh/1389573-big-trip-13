@@ -6,6 +6,8 @@ import PointsModel from './model/points';
 const Method = {
   GET: `GET`,
   PUT: `PUT`,
+  POST: `POST`,
+  DELETE: `DELETE`,
 };
 
 const successHttpStatusRange = {
@@ -33,6 +35,14 @@ export default class Api {
 
   updatePoint(point, infoToDestinations) {
     return this._load({url: `${Url.POINTS}/${point.id}`, method: Method.PUT, body: JSON.stringify(PointsModel.adaptToServer(point, infoToDestinations)), headers: new Headers({"Content-Type": `application/json`})}).then(Api.toJSON).then(PointsModel.adaptToClient);
+  }
+
+  addPoint(point, infoToDestinations) {
+    return this._load({url: Url.POINTS, method: Method.POST, body: JSON.stringify(PointsModel.adaptToServer(point, infoToDestinations)), headers: new Headers({"Content-Type": `application/json`})}).then(Api.toJSON).then(PointsModel.adaptToClient);
+  }
+
+  deletePoint(point) {
+    return this._load({url: `${Url.POINTS}/${point.id}`, method: Method.DELETE});
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {

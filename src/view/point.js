@@ -20,7 +20,7 @@ const createTimeTemplate = (start, end) => {
     const formatNumber = (number) => {
       return number < 10 ? `0${number}` : number;
     };
-    return `${days ? `${formatNumber(days)}D` : ``} ${!days && !hours ? `` : `${formatNumber(hours)}H`} ${formatNumber(minutes)}M`;
+    return `${days ? `${formatNumber(days)}D` : ``} ${!days && !hours ? `` : `${formatNumber(Math.floor(hours))}H`} ${formatNumber(minutes)}M`;
   };
 
   return `
