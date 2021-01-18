@@ -39,8 +39,14 @@ Promise.all([api.getDestinations(), api.getOffers(), api.getPoints()]).then(([in
   destinationsModel.setDestinations(infoToDestinations);
   offersModel.setOffers(offersToTypes);
   pointsModel.setPoints(UpdateType.INIT, points);
+}).catch(() => {
+  pointsModel.setPoints(UpdateType.INIT, []);
 });
 
 document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
   tripPresenter.createNewPoint();
+});
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`./sw.js`);
 });
