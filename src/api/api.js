@@ -45,6 +45,10 @@ export default class Api {
     return this._load({url: `${Url.POINTS}/${point.id}`, method: Method.DELETE});
   }
 
+  sync(data) {
+    return this._load({url: `${Url.POINTS}/sync`, method: Method.POST, body: JSON.stringify(data), headers: new Headers({"Content-Type": `application/json`})}).then(Api.toJSON);
+  }
+
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
     return fetch(`${this._endPoint}/${url}`, {method, body, headers}).then(Api.checkStatus).catch(Api.catchError);
