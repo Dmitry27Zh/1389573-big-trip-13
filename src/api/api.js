@@ -1,7 +1,7 @@
-import {Url} from './const';
-import DestinationsModel from './model/destinations';
-import OffersModel from './model/offers';
-import PointsModel from './model/points';
+import {Url} from '../const';
+import DestinationsModel from '../model/destinations';
+import OffersModel from '../model/offers';
+import PointsModel from '../model/points';
 
 const Method = {
   GET: `GET`,

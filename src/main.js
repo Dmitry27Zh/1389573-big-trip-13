@@ -8,7 +8,7 @@ import PointsModel from './model/points';
 import TripMenuView from './view/menu';
 import {render} from './utils/render';
 import {UpdateType, FilterType, Url, AUTHORIZATION} from './const';
-import Api from './api';
+import Api from './api/api';
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
