@@ -7,8 +7,9 @@ export default class Points extends Observer {
     this._points = [];
   }
 
-  setPoints(points) {
+  setPoints(updateType, points) {
     this._points = points.slice();
+    this.notify(updateType);
   }
 
   getPoints() {
@@ -17,16 +18,57 @@ export default class Points extends Observer {
 
   updatePoint(updateType, update) {
     this._points = updateItem(this._points, update);
-    this._notify(updateType, update);
+    this.notify(updateType, update);
   }
 
   addPoint(updateType, update) {
     this._points = addItem(this._points, update);
-    this._notify(updateType, update);
+    this.notify(updateType, update);
   }
 
   deletePoint(updateType, update) {
     this._points = deleteItem(this._points, update);
-    this._notify(updateType);
+    this.notify(updateType);
+  }
+
+  static adaptToClient(point) {
+    const adaptedPoint = Object.assign({}, point, {
+      cost: point.base_price,
+      isFavorite: point.is_favorite,
+      destination: point.destination.name,
+      date: {
+        start: new Date(point.date_from),
+        end: new Date(point.date_to),
+      },
+      offers: point.offers.map((offer) => {
+        const adaptedOffer = Object.assign({}, offer, {name: offer.title});
+        delete adaptedOffer.title;
+        return adaptedOffer;
+      })
+    });
+    delete adaptedPoint.base_price;
+    delete adaptedPoint.is_favorite;
+    delete adaptedPoint.date_from;
+    delete adaptedPoint.date_to;
+    return adaptedPoint;
+  }
+
+  static adaptToServer(point, infoToDestinations) {
+    const adaptedPoint = Object.assign({}, point, {
+      "base_price": point.cost,
+      "is_favorite": point.isFavorite,
+      "destination": Object.assign({}, infoToDestinations[point.destination], {name: point.destination}),
+      "date_from": point.date.start.toISOString(),
+      "date_to": point.date.end.toISOString(),
+      "offers": point.offers.map((offer) => {
+        const adaptedOffer = Object.assign({}, offer, {title: offer.name});
+        delete adaptedOffer.name;
+        return adaptedOffer;
+      })
+    });
+    delete adaptedPoint.cost;
+    delete adaptedPoint.isFavorite;
+    delete adaptedPoint.date;
+    return adaptedPoint;
   }
 }

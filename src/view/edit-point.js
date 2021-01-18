@@ -1,23 +1,22 @@
-import {TYPES} from '../const';
 import dayjs from 'dayjs';
-import {capitalizeFirstLetter} from '../utils/common';
-import generateDate from '../utils/date';
+import {DEFAULT_POINT} from '../const';
+import {capitalizeFirstLetter, compareObjects} from '../utils/common';
 import Smart from '../view/smart';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-const createEditEventTypesTemplate = (currentType) => {
-  return TYPES.map((type) => `
+const createEditEventTypesTemplate = (types, currentType) => {
+  return types.map((type) => `
     <div class="event__type-item">
-      <input id="event-type-${type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
-      value="${type.toLowerCase()}" ${currentType === type ? `checked` : ``}>
-      <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-1">${type}</label>
+      <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
+      value="${type}" ${currentType === type ? `checked` : ``}>
+      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizeFirstLetter(type)}</label>
     </div>
   `).join(``);
 };
 
-const isOfferApplied = (appliedOffers, index) => {
-  return appliedOffers.some((appliedOffer) => appliedOffer === index);
+const isOfferApplied = (appliedOffers, offer) => {
+  return appliedOffers.some((appliedOffer) => compareObjects(appliedOffer, offer));
 };
 
 const createOffersTemplate = (allOffers, appliedOffers) => {
@@ -25,52 +24,42 @@ const createOffersTemplate = (allOffers, appliedOffers) => {
   <section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-    ${allOffers.map(({name, price}, index) => `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}-${name}" type="checkbox" name="event-offer-${name}"
-    ${isOfferApplied(appliedOffers, index) ? `checked` : ``}>
-    <label class="event__offer-label" for="event-offer-${index}-${name}">
-      <span class="event__offer-title">${name}</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${price}</span>
-    </label>
-    </div>`).join(``)}
+    ${allOffers.map((offer, index) => {
+    const {name, price} = offer;
+    return `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}-${name}" type="checkbox" name="event-offer-${name}"
+      ${isOfferApplied(appliedOffers, offer) ? `checked` : ``}>
+      <label class="event__offer-label" for="event-offer-${index}-${name}">
+        <span class="event__offer-title">${name}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${price}</span>
+      </label>
+      </div>`;
+  }).join(``)}
     </div>
-  </section>
-  `;
+  </section>`;
 };
 
 const createDestinationInfoTemplate = (info) => {
-  const {description, src} = info;
+  const {description, pictures} = info;
   return `
   <section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
     <p class="event__destination-description">${description}</p>
     <div class="event__photos-container">
       <div class="event__photos-tape">
-        ${src.map((source) => `<img class="event__photo" src="${source}" alt="Event photo">`).join(``)}
+        ${pictures.map(({src, description: alt}) => `<img class="event__photo" src="${src}" alt="${alt}">`).join(``)}
       </div>
     </div>
   </section>
   `;
 };
 
-class DefaultPoint {
-  constructor(offersToTypes) {
-    this.type = Object.keys(offersToTypes)[0];
-    this.destination = ``;
-    this.date = {
-      start: dayjs(),
-      end: generateDate(dayjs()),
-    };
-    this.cost = 0;
-    this.offers = [];
-    this.isFavorite = false;
-  }
-}
-
-const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNewPointMode) => {
-  const {type, destination, date: {start, end}, cost = ``, offers = []} = point;
-  const info = infoToDestinations[destination];
+const createEditPointTemplate = (offersToTypes, infoToDestinations, info, point, isNewPointMode) => {
+  const {type, destination, date: {start, end}, cost, offers} = point;
+  const availableOffers = offersToTypes[type];
+  const availableDestinations = Object.keys(infoToDestinations);
+  const allTypes = Object.keys(offersToTypes);
   return `
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -78,14 +67,14 @@ const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNew
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-                ${createEditEventTypesTemplate(type)}
+                ${createEditEventTypesTemplate(allTypes, type)}
               </fieldset>
             </div>
           </div>
@@ -96,7 +85,7 @@ const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNew
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
             <datalist id="destination-list-1">
-              ${Object.keys(infoToDestinations).map((availableDestination) => `<option value="${availableDestination}"></option>`).join(``)}
+              ${availableDestinations.map((availableDestination) => `<option value="${availableDestination}"></option>`).join(``)}
             </datalist>
           </div>
 
@@ -121,7 +110,7 @@ const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNew
           ${!isNewPointMode ? `<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>` : ``}
         </header>
         <section class="event__details">
-            ${offersToTypes[type] ? createOffersTemplate(offersToTypes[type], offers) : ``}
+            ${availableOffers ? createOffersTemplate(availableOffers, offers) : ``}
             ${info ? createDestinationInfoTemplate(info) : ``}
         </section>
       </form>
@@ -130,12 +119,13 @@ const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNew
 };
 
 export default class EditPoint extends Smart {
-  constructor(offersToTypes, infoToDestinations, point = new DefaultPoint(offersToTypes)) {
+  constructor(offersToTypes, infoToDestinations, point) {
     super();
     this._offersToTypes = offersToTypes;
-    this._isNewPointMode = point instanceof DefaultPoint;
-    this._data = EditPoint.parsePointToData(point);
     this._infoToDestinations = infoToDestinations;
+    this._point = point ? point : DEFAULT_POINT;
+    this._isNewPointMode = point ? false : true;
+    this._data = EditPoint.parsePointToData(this._point);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._closeClickHandler = this._closeClickHandler.bind(this);
@@ -151,7 +141,7 @@ export default class EditPoint extends Smart {
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._offersToTypes, this._infoToDestinations, this._data, this._isNewPointMode);
+    return createEditPointTemplate(this._offersToTypes, this._infoToDestinations, this._infoToDestinations[this._data.destination], this._data, this._isNewPointMode);
   }
 
   static parsePointToData(point) {
@@ -211,7 +201,7 @@ export default class EditPoint extends Smart {
 
   _typeToggleClickHandler({target}) {
     this._updateData({
-      type: capitalizeFirstLetter(target.value),
+      type: target.value,
       offers: [],
     });
     this._updateElement();

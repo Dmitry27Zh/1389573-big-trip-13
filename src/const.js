@@ -1,5 +1,3 @@
-const TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
-const DESTINATIONS = [`Amsterdam`, `Geneva`, `Chamonix`];
 const MaxTimeGap = {
   DAYS: 7,
   HOURS: 24,
@@ -36,6 +34,37 @@ const UpdateType = {
   PATCH: `patch`,
   MINOR: `minor`,
   MAJOR: `major`,
+  INIT: `init`,
 };
 
-export {TYPES, DESTINATIONS, MaxTimeGap, RenderPositions, Mode, SortType, FilterType, UserAction, UpdateType};
+const DEFAULT_POINT = {
+  type: `taxi`,
+  destination: `Chamonix`,
+  date: {
+    start: new Date(`2019-07-10T22:55:56.845Z`),
+    end: new Date(`2019-07-11T11:22:13.375Z`),
+  },
+  cost: 222,
+  offers: [
+    {
+      name: `Choose meal`,
+      price: 180,
+    },
+    {
+      name: `Upgrade to comfort class`,
+      price: 50,
+    }
+  ],
+  isFavorite: false,
+};
+
+const AUTHORIZATION = `Basic skvsakscsndkkdA`;
+
+const Url = {
+  END_POINT: `https://13.ecmascript.pages.academy/big-trip`,
+  POINTS: `points`,
+  DESTINATIONS: `destinations`,
+  OFFERS: `offers`,
+};
+
+export {MaxTimeGap, RenderPositions, Mode, SortType, FilterType, UserAction, UpdateType, DEFAULT_POINT, Url, AUTHORIZATION};

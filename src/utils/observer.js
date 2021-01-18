@@ -11,7 +11,7 @@ export default class Observer {
     this._observers = this._observers.filter((existedObserver) => existedObserver !== observer);
   }
 
-  _notify(updateType, updatedPoint) {
+  notify(updateType, updatedPoint) {
     this._observers.forEach((observer) => observer(updateType, updatedPoint));
   }
 }
