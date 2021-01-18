@@ -12,6 +12,12 @@ const Mode = {
   EDITING: `EDITING`,
 };
 
+const State = {
+  SAVING: `saving`,
+  DELETING: `deleting`,
+  ABORTING: `aborting`,
+};
+
 const SortType = {
   DAY: `day`,
   TIME: `time`,
@@ -67,4 +73,6 @@ const Url = {
   OFFERS: `offers`,
 };
 
-export {MaxTimeGap, RenderPositions, Mode, SortType, FilterType, UserAction, UpdateType, DEFAULT_POINT, Url, AUTHORIZATION};
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
+export {MaxTimeGap, RenderPositions, Mode, State, SortType, FilterType, UserAction, UpdateType, DEFAULT_POINT, Url, AUTHORIZATION, SHAKE_ANIMATION_TIMEOUT};

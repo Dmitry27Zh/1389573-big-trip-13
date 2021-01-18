@@ -7,7 +7,7 @@ import NewPointPresenter from '../presenter/new-point';
 import {render, removeElement} from '../utils/render';
 import {sortByDay, sortByTime, sortByPrice} from '../utils/sort';
 import filter from '../utils/filter';
-import {RenderPositions, SortType, FilterType, UserAction, UpdateType} from '../const';
+import {RenderPositions, SortType, FilterType, UserAction, UpdateType, State} from '../const';
 
 export default class Trip {
   constructor(eventsContainer, destinationsModel, offersModel, pointsModel, filtersModel, api) {
@@ -92,6 +92,9 @@ export default class Trip {
   _clearPointsList({resetCurrentSort = false} = {}) {
     Object.values(this._pointPresenters).forEach((presenter) => presenter.destroy());
     this._pointPresenters = {};
+    if (this._newPointPresenter !== null) {
+      this._newPointPresenter.destroy();
+    }
     if (this._noPointsMessageComponent !== null) {
       removeElement(this._noPointsMessageComponent);
     }
@@ -128,13 +131,20 @@ export default class Trip {
   _handleUserAction(userAction, updateType, update) {
     switch (userAction) {
       case UserAction.UPDATE_POINT:
-        this._api.updatePoint(update, this._infoToDestinations).then((response) => this._pointsModel.updatePoint(updateType, response));
+        this._pointPresenters[update.id].setViewState(State.SAVING);
+        this._api.updatePoint(update, this._infoToDestinations).then((response) => this._pointsModel.updatePoint(updateType, response)).catch(() => {
+          this._pointPresenters[update.id].setViewState(State.ABORTING);
+        });
         break;
       case UserAction.DELETE_POINT:
-        this._pointsModel.deletePoint(updateType, update);
+        this._pointPresenters[update.id].setViewState(State.DELETING);
+        this._api.deletePoint(update).then(() => this._pointsModel.deletePoint(updateType, update));
         break;
       case UserAction.ADD_POINT:
-        this._pointsModel.addPoint(updateType, update);
+        this._newPointPresenter.setViewState(State.SAVING);
+        this._api.addPoint(update, this._infoToDestinations).then((response) => this._pointsModel.addPoint(updateType, response)).catch(() => {
+          this._newPointPresenter.setViewState(State.ABORTING);
+        });
         break;
     }
   }
