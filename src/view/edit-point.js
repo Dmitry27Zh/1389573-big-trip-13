@@ -55,11 +55,13 @@ const createDestinationInfoTemplate = (info) => {
   `;
 };
 
-const createEditPointTemplate = (offersToTypes, infoToDestinations, info, point, isNewPointMode) => {
+const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNewPointMode) => {
   const {type, destination, date: {start, end}, cost, offers, isDisabled, isSaving, isDeleting} = point;
+  const {name: destinationName} = destination;
   const availableOffers = offersToTypes[type];
   const availableDestinations = Object.keys(infoToDestinations);
   const allTypes = Object.keys(offersToTypes);
+  const info = infoToDestinations[destinationName];
   return `
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -69,7 +71,7 @@ const createEditPointTemplate = (offersToTypes, infoToDestinations, info, point,
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? `disabled` : ``}>
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled || !allTypes.length ? `disabled` : ``}>
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
@@ -83,7 +85,7 @@ const createEditPointTemplate = (offersToTypes, infoToDestinations, info, point,
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1" ${isDisabled ? `disabled` : ``}>
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationName}" list="destination-list-1" ${isDisabled || !availableDestinations.length ? `disabled` : ``}>
             <datalist id="destination-list-1">
               ${availableDestinations.map((availableDestination) => `<option value="${availableDestination}"></option>`).join(``)}
             </datalist>
@@ -142,7 +144,7 @@ export default class EditPoint extends Smart {
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._offersToTypes, this._infoToDestinations, this._infoToDestinations[this._data.destination], this._data, this._isNewPointMode);
+    return createEditPointTemplate(this._offersToTypes, this._infoToDestinations, this._data, this._isNewPointMode);
   }
 
   static parsePointToData(point) {
@@ -217,8 +219,9 @@ export default class EditPoint extends Smart {
   }
 
   _destinationToggleHandler({target}) {
-    if (Object.keys(this._infoToDestinations).some((destination) => destination === target.value)) {
-      this.updateData({destination: target.value});
+    const newDestination = Object.keys(this._infoToDestinations).some((destination) => destination === target.value);
+    if (newDestination) {
+      this.updateData({destination: Object.assign({}, this._infoToDestinations[target.value], {name: target.value})});
       this.updateElement();
       target.setCustomValidity(``);
     } else {
