@@ -68,7 +68,6 @@ export default class Points extends Observer {
     delete adaptedPoint.cost;
     delete adaptedPoint.isFavorite;
     delete adaptedPoint.date;
-    console.log(adaptedPoint)
     return adaptedPoint;
   }
 }

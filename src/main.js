@@ -40,22 +40,16 @@ filtersPresenter.init();
 const tripPresenter = new TripPresenter(tripEventsElement, destinationsModel, offersModel, pointsModel, filtersModel, api);
 tripPresenter.init();
 
-api.getDestinations().then((destinations) => destinationsModel.setDestinations(destinations)).catch(() => destinationsModel.setDestinations({}));
-api.getOffers().then((offers) => offersModel.setOffers(offers)).catch(() => offersModel.setOffers({}));
-apiWithProvider.getPoints().then((points) => pointsModel.setPoints(UpdateType.INIT, points)).catch(() => pointsModel.setPoints(UpdateType.INIT, []));
-/* Promise.all([api.getDestinations(), api.getOffers(), apiWithProvider.getPoints()]).then(([infoToDestinations, offersToTypes, points]) => {
+const loadDestinations = () => api.getDestinations().then((destinations) => destinationsModel.setDestinations(destinations)).catch(() => destinationsModel.setDestinations({}));
+const loadOffers = () => api.getOffers().then((offers) => offersModel.setOffers(offers)).catch(() => offersModel.setOffers({}));
+const loadPoints = () => apiWithProvider.getPoints().then((points) => pointsModel.setPoints(UpdateType.INIT, points)).catch(() => pointsModel.setPoints(UpdateType.INIT, []));
 
-  destinationsModel.setDestinations(infoToDestinations);
-  offersModel.setOffers(offersToTypes);
-  pointsModel.setPoints(UpdateType.INIT, points);
-}).catch(() => {
-  pointsModel.setPoints(UpdateType.INIT, []);
-}); */
+loadDestinations().then(loadOffers).then(loadPoints);
 
 document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
   tripPresenter.createNewPoint();
 });
 
-/* window.addEventListener(`load`, () => {
+window.addEventListener(`load`, () => {
   navigator.serviceWorker.register(`./sw.js`);
-}); */
+});

@@ -1,4 +1,5 @@
 import PointsModel from '../model/points';
+import {isOnline} from '../utils/common';
 
 const createStoreStructure = (items) => {
   return items.reduce((accum, current) => {
@@ -23,16 +24,17 @@ export default class Provider {
   }
 
   getPoints() {
-    return this._api.getPoints();
-    /* if (this._isOnline()) {
+    if (isOnline()) {
       return this._api.getPoints().then((points) => {
         const formattedPoints = createStoreStructure(points.map(PointsModel.adaptToServer));
         this._store.setItems(formattedPoints);
+        console.log(formattedPoints)
         return points;
       });
     }
     const storePoints = Object.values(this._store.getItems());
-    return Promise.resolve(storePoints, PointsModel.adaptToClient); */
+    console.log(storePoints);
+    return Promise.resolve(storePoints.map(PointsModel.adaptToClient));
   }
 
   updatePoint(point, infoToDestinations) {
@@ -45,9 +47,5 @@ export default class Provider {
 
   sync() {
     return this._api.sync(data);
-  }
-
-  _isOnline() {
-    return navigator.onLine;
   }
 }
