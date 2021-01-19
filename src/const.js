@@ -45,7 +45,18 @@ const UpdateType = {
 
 const DEFAULT_POINT = {
   type: `taxi`,
-  destination: `Chamonix`,
+  destination: {
+    description: `Chamonix, is a beautiful city.`,
+    name: `Chamonix`,
+    pictures: [
+      {src: `http://picsum.photos/300/200?r=0.6236451224538337`, description: `Chamonix street market`},
+      {src: `http://picsum.photos/300/200?r=0.44702327769855543`, description: `Chamonix zoo`},
+      {src: `http://picsum.photos/300/200?r=0.08618063505863716`, description: `Chamonix embankment`},
+      {src: `http://picsum.photos/300/200?r=0.9821085408447474`, description: `Chamonix kindergarten`},
+      {src: `http://picsum.photos/300/200?r=0.8236975339768073`, description: `Chamonix street market`},
+      {src: `http://picsum.photos/300/200?r=0.3302599132705648`, description: `Chamonix zoo`},
+    ],
+  },
   date: {
     start: new Date(`2019-07-10T22:55:56.845Z`),
     end: new Date(`2019-07-11T11:22:13.375Z`),
@@ -64,7 +75,7 @@ const DEFAULT_POINT = {
   isFavorite: false,
 };
 
-const AUTHORIZATION = `Basic skvsakscsndkskdA`;
+const AUTHORIZATION = `Basic skvaakscsndkskdA`;
 
 const Url = {
   END_POINT: `https://13.ecmascript.pages.academy/big-trip`,

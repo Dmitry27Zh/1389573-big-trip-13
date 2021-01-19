@@ -16,7 +16,7 @@ export default class Store {
     this._storage.setItem(this._storeKey, JSON.stringify(items));
   }
 
-  updateItem(key, value) {
+  setItem(key, value) {
     const store = this.getItems();
     this._storage.setItem(this._storeKey, JSON.stringify(Object.assign({}, store, {[key]: value})));
   }

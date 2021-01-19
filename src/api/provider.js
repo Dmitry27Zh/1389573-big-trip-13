@@ -1,5 +1,6 @@
 import PointsModel from '../model/points';
 import {isOnline} from '../utils/common';
+import Point from '../view/point';
 
 const createStoreStructure = (items) => {
   return items.reduce((accum, current) => {
@@ -20,14 +21,6 @@ export default class Provider {
     this._store = store;
   }
 
-  getDestinations() {
-    return this._api.getDestinations();
-  }
-
-  getOffers() {
-    return this._api.getOffers();
-  }
-
   getPoints() {
     if (isOnline()) {
       return this._api.getPoints().then((points) => {
@@ -43,12 +36,22 @@ export default class Provider {
   updatePoint(point) {
     if (isOnline()) {
       return this._api.updatePoint(point).then((updatedPoint) => {
-        this._store.updateItem(point.id, updatedPoint);
+        this._store.setItem(updatedPoint.id, PointsModel.adaptToServer(updatedPoint));
         return updatedPoint;
       });
     }
-    this._store.updateItem(point.id, PointsModel.adaptToServer(Object.assign({}, point)));
+    this._store.setItem(point.id, PointsModel.adaptToServer(Object.assign({}, point)));
     return Promise.resolve(point);
+  }
+
+  addPoint(point) {
+    if (isOnline()) {
+      return this._api.addPoint(point).then((newPoint) => {
+        this._store.setItem(newPoint.id, PointsModel.adaptToServer(newPoint));
+        return newPoint;
+      });
+    }
+    return Promise.reject(`Add task failed`);
   }
 
   deletePoint(point) {
@@ -64,6 +67,7 @@ export default class Provider {
       return this._api.sync(storePoints).then((response) => {
         const createdPoints = getSyncedPoints(response.created);
         const updatedPoints = getSyncedPoints(response.updated);
+        console.log(updatedPoints);
         const formattedPoints = createStoreStructure([...createdPoints, ...updatedPoints]);
         this._store.setItems(formattedPoints);
       });
