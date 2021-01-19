@@ -1,6 +1,5 @@
 import PointsModel from '../model/points';
 import {isOnline} from '../utils/common';
-import Point from '../view/point';
 
 const createStoreStructure = (items) => {
   return items.reduce((accum, current) => {
@@ -19,6 +18,7 @@ export default class Provider {
   constructor(api, store) {
     this._api = api;
     this._store = store;
+    this._isStoreUpdated = false;
   }
 
   getPoints() {
@@ -41,6 +41,7 @@ export default class Provider {
       });
     }
     this._store.setItem(point.id, PointsModel.adaptToServer(Object.assign({}, point)));
+    this._syncNeeded = true;
     return Promise.resolve(point);
   }
 
@@ -62,7 +63,7 @@ export default class Provider {
   }
 
   sync() {
-    if (isOnline()) {
+    if (isOnline() && this._syncNeeded) {
       const storePoints = Object.values(this._store.getItems());
       return this._api.sync(storePoints).then((response) => {
         const createdPoints = getSyncedPoints(response.created);
