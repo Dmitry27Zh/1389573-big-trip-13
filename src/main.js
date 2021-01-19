@@ -12,6 +12,10 @@ import Api from './api/api';
 import Store from './api/store';
 import Provider from './api/provider';
 
+const STORE_PREFIX = `big-trip-localstorage`;
+const STORE_VER = `v8`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
+
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 const tripEventsElement = document.querySelector(`.trip-events`);
@@ -23,7 +27,7 @@ const filtersModel = new FiltersModel();
 
 const api = new Api(Url.END_POINT, AUTHORIZATION);
 
-const store = new Store(`big-trip`, window.localStorage);
+const store = new Store(STORE_NAME, window.localStorage);
 
 const apiWithProvider = new Provider(api, store);
 
@@ -37,7 +41,7 @@ render(tripControlsElement, new TripMenuView());
 const filtersPresenter = new FiltersPresenter(tripControlsElement, filtersModel);
 filtersPresenter.init();
 
-const tripPresenter = new TripPresenter(tripEventsElement, destinationsModel, offersModel, pointsModel, filtersModel, api);
+const tripPresenter = new TripPresenter(tripEventsElement, destinationsModel, offersModel, pointsModel, filtersModel, apiWithProvider);
 tripPresenter.init();
 
 const loadDestinations = () => api.getDestinations().then((destinations) => destinationsModel.setDestinations(destinations)).catch(() => destinationsModel.setDestinations({}));
@@ -52,4 +56,13 @@ document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, ()
 
 window.addEventListener(`load`, () => {
   navigator.serviceWorker.register(`./sw.js`);
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+  apiWithProvider.sync();
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
 });

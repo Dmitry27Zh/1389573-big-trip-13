@@ -9,6 +9,11 @@ const createStoreStructure = (items) => {
   }, {});
 };
 
+const getSyncedPoints = (items) => {
+  return items.filter(({success}) => success)
+    .map(({payload}) => payload.point);
+};
+
 export default class Provider {
   constructor(api, store) {
     this._api = api;
@@ -28,24 +33,41 @@ export default class Provider {
       return this._api.getPoints().then((points) => {
         const formattedPoints = createStoreStructure(points.map(PointsModel.adaptToServer));
         this._store.setItems(formattedPoints);
-        console.log(formattedPoints)
         return points;
       });
     }
     const storePoints = Object.values(this._store.getItems());
-    console.log(storePoints);
     return Promise.resolve(storePoints.map(PointsModel.adaptToClient));
   }
 
-  updatePoint(point, infoToDestinations) {
-    return this._api(point, infoToDestinations);
+  updatePoint(point) {
+    if (isOnline()) {
+      return this._api.updatePoint(point).then((updatedPoint) => {
+        this._store.updateItem(point.id, updatedPoint);
+        return updatedPoint;
+      });
+    }
+    this._store.updateItem(point.id, PointsModel.adaptToServer(Object.assign({}, point)));
+    return Promise.resolve(point);
   }
 
   deletePoint(point) {
-    return this._api.deletePoint(point);
+    if (isOnline()) {
+      return this._api.deletePoint(point).then(() => this._store.removeItem(point.id));
+    }
+    return Promise.reject(new Error(`Delete task failed`));
   }
 
   sync() {
-    return this._api.sync(data);
+    if (isOnline()) {
+      const storePoints = Object.values(this._store.getItems());
+      return this._api.sync(storePoints).then((response) => {
+        const createdPoints = getSyncedPoints(response.created);
+        const updatedPoints = getSyncedPoints(response.updated);
+        const formattedPoints = createStoreStructure([...createdPoints, ...updatedPoints]);
+        this._store.setItems(formattedPoints);
+      });
+    }
+    return Promise.reject(new Error(`Sync data failed`));
   }
 }

@@ -9,7 +9,6 @@ export default class Points extends Observer {
 
   setPoints(updateType, points) {
     this._points = points.slice();
-    console.log(points)
     this.notify(updateType);
   }
 
