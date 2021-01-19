@@ -75,7 +75,7 @@ const DEFAULT_POINT = {
   isFavorite: false,
 };
 
-const AUTHORIZATION = `Basic skvaakscsndkskdA`;
+const AUTHORIZATION = `Basic skvaakcsndkskdA`;
 
 const Url = {
   END_POINT: `https://13.ecmascript.pages.academy/big-trip`,

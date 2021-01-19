@@ -7,6 +7,8 @@ import OffersModel from './model/offers';
 import PointsModel from './model/points';
 import TripMenuView from './view/menu';
 import {render} from './utils/render';
+import {isOnline} from './utils/common';
+import {toast} from './utils/toast/toast';
 import {UpdateType, FilterType, Url, AUTHORIZATION} from './const';
 import Api from './api/api';
 import Store from './api/store';
@@ -51,6 +53,10 @@ const loadPoints = () => apiWithProvider.getPoints().then((points) => pointsMode
 loadDestinations().then(loadOffers).then(loadPoints);
 
 document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
+  if (!isOnline()) {
+    toast(`You can't create new point offline`);
+    return;
+  }
   tripPresenter.createNewPoint();
 });
 
@@ -65,4 +71,5 @@ window.addEventListener(`online`, () => {
 
 window.addEventListener(`offline`, () => {
   document.title += ` [offline]`;
+  toast(`Lost connection to server`);
 });
