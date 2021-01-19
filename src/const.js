@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const MaxTimeGap = {
   DAYS: 7,
   HOURS: 24,
@@ -58,8 +60,8 @@ const DEFAULT_POINT = {
     ],
   },
   date: {
-    start: new Date(`2019-07-10T22:55:56.845Z`),
-    end: new Date(`2019-07-11T11:22:13.375Z`),
+    start: new Date(dayjs()),
+    end: new Date(dayjs()),
   },
   cost: 222,
   offers: [

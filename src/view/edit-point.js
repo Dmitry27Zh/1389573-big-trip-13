@@ -175,11 +175,12 @@ export default class EditPoint extends Smart {
       this._endDatePicker = null;
     }
     this._startDatePicker = flatpickr(this.getElement().querySelector(`#event-start-time-1`), {dateFormat: `d/m/y H:i`, enableTime: true, onChange: this._startDateChangeHandler});
-    this._endDatePicker = flatpickr(this.getElement().querySelector(`#event-end-time-1`), {dateFormat: `d/m/y H:i`, enableTime: true, onChange: this._endDateChangeHandler});
+    this._endDatePicker = flatpickr(this.getElement().querySelector(`#event-end-time-1`), {dateFormat: `d/m/y H:i`, minDate: this._startDatePicker.input.value, enableTime: true, onChange: this._endDateChangeHandler});
   }
 
   _startDateChangeHandler([startDate]) {
-    this.updateData({date: Object.assign({}, this._data.date, {start: startDate})});
+    this._endDatePicker.config.minDate = startDate;
+    this.updateData({date: Object.assign({}, this._data.date, {start: startDate, end: startDate})});
   }
 
   _endDateChangeHandler([endDate]) {
