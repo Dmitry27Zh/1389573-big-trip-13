@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {DEFAULT_POINT} from '../const';
-import {capitalizeFirstLetter, compareObjects} from '../utils/common';
+import {capitalizeFirstLetter, compareObjects, addItem} from '../utils/common';
 import Smart from '../view/smart';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
@@ -134,6 +134,7 @@ export default class EditPoint extends Smart {
     this._typeToggleClickHandler = this._typeToggleClickHandler.bind(this);
     this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
     this._priceChangeHandler = this._priceChangeHandler.bind(this);
+    this._offersChangeHandler = this._offersChangeHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
     this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
     this.resetViewState = this.resetViewState.bind(this);
@@ -240,10 +241,21 @@ export default class EditPoint extends Smart {
     target.reportValidity();
   }
 
+  _offersChangeHandler({target}) {
+    const changedOffer = this._offersToTypes[this._data.type].find((offer) => offer.name === target.name.replace(`event-offer-`, ``));
+    const isOfferChecked = target.checked;
+    if (isOfferChecked) {
+      this.updateData({offers: addItem(this._data.offers, changedOffer)});
+    } else {
+      this.updateData({offers: this._data.offers.filter((offer) => offer.name !== changedOffer.name)});
+    }
+  }
+
   _setInnerHandlers() {
     this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._typeToggleClickHandler);
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationToggleHandler);
     this.getElement().querySelector(`.event__input--price`).addEventListener(`change`, this._priceChangeHandler);
+    this.getElement().querySelector(`.event__available-offers`).addEventListener(`change`, this._offersChangeHandler);
   }
 
   _deleteClickHandler(evt) {
