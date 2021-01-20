@@ -83,10 +83,10 @@ export default class Trip {
     render(this._eventsListComponent, this._noPointsMessageComponent);
   }
 
-  createNewPoint() {
+  createNewPoint(initButton) {
     this._currentSortType = SortType.DAY;
     this._filtersModel.changeFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._newPointPresenter.init(this._offersToTypes, this._infoToDestinations);
+    this._newPointPresenter.init(this._offersToTypes, this._infoToDestinations, initButton);
   }
 
   _clearPointsList({resetCurrentSort = false} = {}) {

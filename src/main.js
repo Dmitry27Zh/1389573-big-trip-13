@@ -52,15 +52,16 @@ const loadPoints = () => apiWithProvider.getPoints().then((points) => pointsMode
 
 loadDestinations().then(loadOffers).then(loadPoints);
 
-document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
+document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, ({target}) => {
   if (!isOnline()) {
     toast(`You can't create new point offline`);
     return;
   }
-  tripPresenter.createNewPoint();
+  target.disabled = true;
+  tripPresenter.createNewPoint(target);
 });
 
-window.addEventListener(`load`, () => {
+/* window.addEventListener(`load`, () => {
   navigator.serviceWorker.register(`./sw.js`);
 });
 
@@ -72,4 +73,4 @@ window.addEventListener(`online`, () => {
 window.addEventListener(`offline`, () => {
   document.title += ` [offline]`;
   toast(`Lost connection to server`);
-});
+}); */
