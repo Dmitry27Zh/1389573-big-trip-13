@@ -88,4 +88,9 @@ const Url = {
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
-export {MaxTimeGap, RenderPositions, Mode, State, SortType, FilterType, UserAction, UpdateType, DEFAULT_POINT, Url, AUTHORIZATION, SHAKE_ANIMATION_TIMEOUT};
+const MenuItem = {
+  TABLE: `Table`,
+  STATS: `Stats`,
+};
+
+export {MaxTimeGap, RenderPositions, Mode, State, SortType, FilterType, UserAction, UpdateType, DEFAULT_POINT, Url, AUTHORIZATION, SHAKE_ANIMATION_TIMEOUT, MenuItem};

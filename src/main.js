@@ -6,10 +6,11 @@ import DestinationsModel from './model/destinations';
 import OffersModel from './model/offers';
 import PointsModel from './model/points';
 import TripMenuView from './view/menu';
-import {render} from './utils/render';
+import StatsView from './view/stats';
+import {render, removeElement} from './utils/render';
 import {isOnline} from './utils/common';
 import {toast} from './utils/toast/toast';
-import {UpdateType, FilterType, Url, AUTHORIZATION} from './const';
+import {UpdateType, FilterType, Url, AUTHORIZATION, MenuItem} from './const';
 import Api from './api/api';
 import Store from './api/store';
 import Provider from './api/provider';
@@ -38,13 +39,36 @@ filtersModel.setFilter(FilterType.EVERYTHING);
 const infoPresenter = new InfoPresenter(tripMainElement, pointsModel);
 infoPresenter.init();
 
-render(tripControlsElement, new TripMenuView());
+const menuComponent = new TripMenuView();
+
+render(tripControlsElement, menuComponent);
 
 const filtersPresenter = new FiltersPresenter(tripControlsElement, filtersModel);
 filtersPresenter.init();
 
 const tripPresenter = new TripPresenter(tripEventsElement, destinationsModel, offersModel, pointsModel, filtersModel, apiWithProvider);
 tripPresenter.init();
+
+const StatsComponent = new StatsView();
+
+const handleMenuClick = (menuItem) => {
+  if (menuItem.classList.contains(`trip-tabs__btn--active`)) {
+    return;
+  }
+  menuComponent.setActiveItem(menuItem);
+  switch (menuItem.textContent) {
+    case MenuItem.TABLE:
+      removeElement(StatsComponent);
+      tripPresenter.init();
+      break;
+    case MenuItem.STATS:
+      tripPresenter.destroy();
+      render(tripEventsElement.parentElement, StatsComponent);
+      break;
+  }
+};
+
+menuComponent.setMenuClickHandler(handleMenuClick);
 
 const loadDestinations = () => api.getDestinations().then((destinations) => destinationsModel.setDestinations(destinations)).catch(() => destinationsModel.setDestinations({}));
 const loadOffers = () => api.getOffers().then((offers) => offersModel.setOffers(offers)).catch(() => offersModel.setOffers({}));

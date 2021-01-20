@@ -104,6 +104,13 @@ export default class Trip {
     }
   }
 
+  destroy() {
+    this._clearPointsList({resetCurrentSort: true});
+    removeElement(this._eventsListComponent);
+    this._pointsModel.removeObserver(this._handleViewChange);
+    this._filtersModel.removeObserver(this._handleViewChange);
+  }
+
   _renderEventsList() {
     if (this._isLoading) {
       this._renderLoading();
