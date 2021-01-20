@@ -49,7 +49,7 @@ filtersPresenter.init();
 const tripPresenter = new TripPresenter(tripEventsElement, destinationsModel, offersModel, pointsModel, filtersModel, apiWithProvider);
 tripPresenter.init();
 
-const StatsComponent = new StatsView();
+let statsComponent = null;
 
 const handleMenuClick = (menuItem) => {
   if (menuItem.classList.contains(`trip-tabs__btn--active`)) {
@@ -58,12 +58,13 @@ const handleMenuClick = (menuItem) => {
   menuComponent.setActiveItem(menuItem);
   switch (menuItem.textContent) {
     case MenuItem.TABLE:
-      removeElement(StatsComponent);
+      removeElement(statsComponent);
       tripPresenter.init();
       break;
     case MenuItem.STATS:
       tripPresenter.destroy();
-      render(tripEventsElement.parentElement, StatsComponent);
+      statsComponent = new StatsView(pointsModel.getPoints());
+      render(tripEventsElement.parentElement, statsComponent);
       break;
   }
 };

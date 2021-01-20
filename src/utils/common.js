@@ -34,6 +34,8 @@ export const deleteItem = (items, deletedItem) => {
   return [...items.slice(0, index), ...items.slice(index + 1)];
 };
 
+export const getUniqueItems = (items) => Array.from(new Set(items));
+
 export const capitalizeFirstLetter = (word) => {
   return `${word[0].toUpperCase()}${word.slice(1)}`;
 };
