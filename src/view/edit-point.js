@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {DEFAULT_POINT} from '../const';
-import {capitalizeFirstLetter, compareObjects} from '../utils/common';
+import {capitalizeFirstLetter, compareObjects, addItem} from '../utils/common';
 import Smart from '../view/smart';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
@@ -55,11 +55,13 @@ const createDestinationInfoTemplate = (info) => {
   `;
 };
 
-const createEditPointTemplate = (offersToTypes, infoToDestinations, info, point, isNewPointMode) => {
+const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNewPointMode) => {
   const {type, destination, date: {start, end}, cost, offers, isDisabled, isSaving, isDeleting} = point;
+  const {name: destinationName} = destination;
   const availableOffers = offersToTypes[type];
   const availableDestinations = Object.keys(infoToDestinations);
   const allTypes = Object.keys(offersToTypes);
+  const info = infoToDestinations[destinationName];
   return `
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -69,7 +71,7 @@ const createEditPointTemplate = (offersToTypes, infoToDestinations, info, point,
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? `disabled` : ``}>
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled || !allTypes.length ? `disabled` : ``}>
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
@@ -83,7 +85,7 @@ const createEditPointTemplate = (offersToTypes, infoToDestinations, info, point,
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1" ${isDisabled ? `disabled` : ``}>
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationName}" list="destination-list-1" ${isDisabled || !availableDestinations.length ? `disabled` : ``}>
             <datalist id="destination-list-1">
               ${availableDestinations.map((availableDestination) => `<option value="${availableDestination}"></option>`).join(``)}
             </datalist>
@@ -132,6 +134,7 @@ export default class EditPoint extends Smart {
     this._typeToggleClickHandler = this._typeToggleClickHandler.bind(this);
     this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
     this._priceChangeHandler = this._priceChangeHandler.bind(this);
+    this._offersChangeHandler = this._offersChangeHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
     this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
     this.resetViewState = this.resetViewState.bind(this);
@@ -142,7 +145,7 @@ export default class EditPoint extends Smart {
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._offersToTypes, this._infoToDestinations, this._infoToDestinations[this._data.destination], this._data, this._isNewPointMode);
+    return createEditPointTemplate(this._offersToTypes, this._infoToDestinations, this._data, this._isNewPointMode);
   }
 
   static parsePointToData(point) {
@@ -172,11 +175,12 @@ export default class EditPoint extends Smart {
       this._endDatePicker = null;
     }
     this._startDatePicker = flatpickr(this.getElement().querySelector(`#event-start-time-1`), {dateFormat: `d/m/y H:i`, enableTime: true, onChange: this._startDateChangeHandler});
-    this._endDatePicker = flatpickr(this.getElement().querySelector(`#event-end-time-1`), {dateFormat: `d/m/y H:i`, enableTime: true, onChange: this._endDateChangeHandler});
+    this._endDatePicker = flatpickr(this.getElement().querySelector(`#event-end-time-1`), {dateFormat: `d/m/y H:i`, minDate: this._startDatePicker.input.value, enableTime: true, onChange: this._endDateChangeHandler});
   }
 
   _startDateChangeHandler([startDate]) {
-    this.updateData({date: Object.assign({}, this._data.date, {start: startDate})});
+    this._endDatePicker.config.minDate = startDate;
+    this.updateData({date: Object.assign({}, this._data.date, {start: startDate, end: startDate})});
   }
 
   _endDateChangeHandler([endDate]) {
@@ -217,8 +221,9 @@ export default class EditPoint extends Smart {
   }
 
   _destinationToggleHandler({target}) {
-    if (Object.keys(this._infoToDestinations).some((destination) => destination === target.value)) {
-      this.updateData({destination: target.value});
+    const newDestination = Object.keys(this._infoToDestinations).some((destination) => destination === target.value);
+    if (newDestination) {
+      this.updateData({destination: Object.assign({}, this._infoToDestinations[target.value], {name: target.value})});
       this.updateElement();
       target.setCustomValidity(``);
     } else {
@@ -237,10 +242,21 @@ export default class EditPoint extends Smart {
     target.reportValidity();
   }
 
+  _offersChangeHandler({target}) {
+    const changedOffer = this._offersToTypes[this._data.type].find((offer) => offer.name === target.name.replace(`event-offer-`, ``));
+    const isOfferChecked = target.checked;
+    if (isOfferChecked) {
+      this.updateData({offers: addItem(this._data.offers, changedOffer)});
+    } else {
+      this.updateData({offers: this._data.offers.filter((offer) => offer.name !== changedOffer.name)});
+    }
+  }
+
   _setInnerHandlers() {
     this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._typeToggleClickHandler);
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationToggleHandler);
     this.getElement().querySelector(`.event__input--price`).addEventListener(`change`, this._priceChangeHandler);
+    this.getElement().querySelector(`.event__available-offers`).addEventListener(`change`, this._offersChangeHandler);
   }
 
   _deleteClickHandler(evt) {

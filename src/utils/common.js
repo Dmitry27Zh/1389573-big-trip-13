@@ -41,3 +41,7 @@ export const capitalizeFirstLetter = (word) => {
 export const compareObjects = (first, second) => {
   return Object.keys(first).every((key) => first[key] === second[key]);
 };
+
+export const isOnline = () => {
+  return window.navigator.onLine;
+};

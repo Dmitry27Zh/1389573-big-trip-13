@@ -7,8 +7,16 @@ import OffersModel from './model/offers';
 import PointsModel from './model/points';
 import TripMenuView from './view/menu';
 import {render} from './utils/render';
+import {isOnline} from './utils/common';
+import {toast} from './utils/toast/toast';
 import {UpdateType, FilterType, Url, AUTHORIZATION} from './const';
-import Api from './api';
+import Api from './api/api';
+import Store from './api/store';
+import Provider from './api/provider';
+
+const STORE_PREFIX = `big-trip-localstorage`;
+const STORE_VER = `v8`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
@@ -21,6 +29,10 @@ const filtersModel = new FiltersModel();
 
 const api = new Api(Url.END_POINT, AUTHORIZATION);
 
+const store = new Store(STORE_NAME, window.localStorage);
+
+const apiWithProvider = new Provider(api, store);
+
 filtersModel.setFilter(FilterType.EVERYTHING);
 
 const infoPresenter = new InfoPresenter(tripMainElement, pointsModel);
@@ -31,16 +43,33 @@ render(tripControlsElement, new TripMenuView());
 const filtersPresenter = new FiltersPresenter(tripControlsElement, filtersModel);
 filtersPresenter.init();
 
-const tripPresenter = new TripPresenter(tripEventsElement, destinationsModel, offersModel, pointsModel, filtersModel, api);
+const tripPresenter = new TripPresenter(tripEventsElement, destinationsModel, offersModel, pointsModel, filtersModel, apiWithProvider);
 tripPresenter.init();
 
-Promise.all([api.getDestinations(), api.getOffers(), api.getPoints()]).then(([infoToDestinations, offersToTypes, points]) => {
+const loadDestinations = () => api.getDestinations().then((destinations) => destinationsModel.setDestinations(destinations)).catch(() => destinationsModel.setDestinations({}));
+const loadOffers = () => api.getOffers().then((offers) => offersModel.setOffers(offers)).catch(() => offersModel.setOffers({}));
+const loadPoints = () => apiWithProvider.getPoints().then((points) => pointsModel.setPoints(UpdateType.INIT, points)).catch(() => pointsModel.setPoints(UpdateType.INIT, []));
 
-  destinationsModel.setDestinations(infoToDestinations);
-  offersModel.setOffers(offersToTypes);
-  pointsModel.setPoints(UpdateType.INIT, points);
-});
+loadDestinations().then(loadOffers).then(loadPoints);
 
 document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, () => {
+  if (!isOnline()) {
+    toast(`You can't create new point offline`);
+    return;
+  }
   tripPresenter.createNewPoint();
+});
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`./sw.js`);
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+  apiWithProvider.sync();
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+  toast(`Lost connection to server`);
 });

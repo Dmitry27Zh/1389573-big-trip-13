@@ -1,7 +1,7 @@
-import {Url} from './const';
-import DestinationsModel from './model/destinations';
-import OffersModel from './model/offers';
-import PointsModel from './model/points';
+import {Url} from '../const';
+import DestinationsModel from '../model/destinations';
+import OffersModel from '../model/offers';
+import PointsModel from '../model/points';
 
 const Method = {
   GET: `GET`,
@@ -33,16 +33,20 @@ export default class Api {
     return this._load({url: Url.POINTS}).then(Api.toJSON).then((points) => points.map(PointsModel.adaptToClient));
   }
 
-  updatePoint(point, infoToDestinations) {
-    return this._load({url: `${Url.POINTS}/${point.id}`, method: Method.PUT, body: JSON.stringify(PointsModel.adaptToServer(point, infoToDestinations)), headers: new Headers({"Content-Type": `application/json`})}).then(Api.toJSON).then(PointsModel.adaptToClient);
+  updatePoint(point) {
+    return this._load({url: `${Url.POINTS}/${point.id}`, method: Method.PUT, body: JSON.stringify(PointsModel.adaptToServer(point)), headers: new Headers({"Content-Type": `application/json`})}).then(Api.toJSON).then(PointsModel.adaptToClient);
   }
 
-  addPoint(point, infoToDestinations) {
-    return this._load({url: Url.POINTS, method: Method.POST, body: JSON.stringify(PointsModel.adaptToServer(point, infoToDestinations)), headers: new Headers({"Content-Type": `application/json`})}).then(Api.toJSON).then(PointsModel.adaptToClient);
+  addPoint(point) {
+    return this._load({url: Url.POINTS, method: Method.POST, body: JSON.stringify(PointsModel.adaptToServer(point)), headers: new Headers({"Content-Type": `application/json`})}).then(Api.toJSON).then(PointsModel.adaptToClient);
   }
 
   deletePoint(point) {
     return this._load({url: `${Url.POINTS}/${point.id}`, method: Method.DELETE});
+  }
+
+  sync(data) {
+    return this._load({url: `${Url.POINTS}/sync`, method: Method.POST, body: JSON.stringify(data), headers: new Headers({"Content-Type": `application/json`})}).then(Api.toJSON);
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {

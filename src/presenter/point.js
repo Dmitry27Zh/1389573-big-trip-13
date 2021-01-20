@@ -1,6 +1,8 @@
 import PointView from '../view/point';
 import EditPointView from '../view/edit-point';
 import {render, replaceElements, removeElement} from '../utils/render';
+import {isOnline} from '../utils/common';
+import {toast} from '../utils/toast/toast';
 import {Mode, State, UserAction, UpdateType} from '../const';
 
 export default class Point {
@@ -86,6 +88,10 @@ export default class Point {
   }
 
   _handleEditClick() {
+    if (!isOnline()) {
+      toast(`You can't edit point offline`);
+      return;
+    }
     this._replacePointToForm();
     document.addEventListener(`keydown`, this._escKeydownHandler);
     this._editPointComponent.setCloseClickHandler(this._handleCloseFormCLick);
@@ -98,10 +104,18 @@ export default class Point {
   }
 
   _handleDeleteClick(deletedPoint) {
+    if (!isOnline()) {
+      toast(`You can't save point offline`);
+      return;
+    }
     this._changeData(UserAction.DELETE_POINT, UpdateType.MAJOR, deletedPoint);
   }
 
   _handleFormSubmit(editedPoint) {
+    if (!isOnline()) {
+      toast(`You can't save point offline`);
+      return;
+    }
     document.removeEventListener(`keydown`, this._escKeydownHandler);
     this._changeData(UserAction.UPDATE_POINT, UpdateType.PATCH, editedPoint);
   }

@@ -132,7 +132,7 @@ export default class Trip {
     switch (userAction) {
       case UserAction.UPDATE_POINT:
         this._pointPresenters[update.id].setViewState(State.SAVING);
-        this._api.updatePoint(update, this._infoToDestinations).then((response) => this._pointsModel.updatePoint(updateType, response)).catch(() => {
+        this._api.updatePoint(update).then((response) => this._pointsModel.updatePoint(updateType, response)).catch(() => {
           this._pointPresenters[update.id].setViewState(State.ABORTING);
         });
         break;
@@ -142,7 +142,7 @@ export default class Trip {
         break;
       case UserAction.ADD_POINT:
         this._newPointPresenter.setViewState(State.SAVING);
-        this._api.addPoint(update, this._infoToDestinations).then((response) => this._pointsModel.addPoint(updateType, response)).catch(() => {
+        this._api.addPoint(update).then((response) => this._pointsModel.addPoint(updateType, response)).catch(() => {
           this._newPointPresenter.setViewState(State.ABORTING);
         });
         break;
