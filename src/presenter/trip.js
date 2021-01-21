@@ -57,7 +57,7 @@ export default class Trip {
     if (this._sortComponent !== null) {
       removeElement(this._sortComponent);
     }
-    this._sortComponent = new SortView();
+    this._sortComponent = new SortView(this._currentSortType);
     render(this._eventsContainer, this._sortComponent, RenderPositions.AFTERBEGIN);
     this._sortComponent.setSortClickHandler(this._handleSortChange);
   }

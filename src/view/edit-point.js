@@ -254,9 +254,13 @@ export default class EditPoint extends Smart {
 
   _setInnerHandlers() {
     this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._typeToggleClickHandler);
-    this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationToggleHandler);
     this.getElement().querySelector(`.event__input--price`).addEventListener(`change`, this._priceChangeHandler);
-    this.getElement().querySelector(`.event__available-offers`).addEventListener(`change`, this._offersChangeHandler);
+    if (Object.keys(this._infoToDestinations).length) {
+      this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationToggleHandler);
+    }
+    if (Object.keys(this._offersToTypes).length) {
+      this.getElement().querySelector(`.event__available-offers`).addEventListener(`change`, this._offersChangeHandler);
+    }
   }
 
   _deleteClickHandler(evt) {

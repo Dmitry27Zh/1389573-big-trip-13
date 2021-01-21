@@ -51,12 +51,12 @@ const DEFAULT_POINT = {
     description: `Chamonix, is a beautiful city.`,
     name: `Chamonix`,
     pictures: [
-      {src: `http://picsum.photos/300/200?r=0.6236451224538337`, description: `Chamonix street market`},
-      {src: `http://picsum.photos/300/200?r=0.44702327769855543`, description: `Chamonix zoo`},
-      {src: `http://picsum.photos/300/200?r=0.08618063505863716`, description: `Chamonix embankment`},
-      {src: `http://picsum.photos/300/200?r=0.9821085408447474`, description: `Chamonix kindergarten`},
-      {src: `http://picsum.photos/300/200?r=0.8236975339768073`, description: `Chamonix street market`},
-      {src: `http://picsum.photos/300/200?r=0.3302599132705648`, description: `Chamonix zoo`},
+      {src: `https://picsum.photos/300/200?r=0.6236451224538337`, description: `Chamonix street market`},
+      {src: `https://picsum.photos/300/200?r=0.44702327769855543`, description: `Chamonix zoo`},
+      {src: `https://picsum.photos/300/200?r=0.08618063505863716`, description: `Chamonix embankment`},
+      {src: `https://picsum.photos/300/200?r=0.9821085408447474`, description: `Chamonix kindergarten`},
+      {src: `https://picsum.photos/300/200?r=0.8236975339768073`, description: `Chamonix street market`},
+      {src: `https://picsum.photos/300/200?r=0.3302599132705648`, description: `Chamonix zoo`},
     ],
   },
   date: {
@@ -64,20 +64,11 @@ const DEFAULT_POINT = {
     end: new Date(dayjs()),
   },
   cost: 222,
-  offers: [
-    {
-      name: `Choose meal`,
-      price: 180,
-    },
-    {
-      name: `Upgrade to comfort class`,
-      price: 50,
-    }
-  ],
+  offers: [],
   isFavorite: false,
 };
 
-const AUTHORIZATION = `Basic skvaakcsndkskd`;
+const AUTHORIZATION = `Basic skvaakcsndksskdA`;
 
 const Url = {
   END_POINT: `https://13.ecmascript.pages.academy/big-trip`,

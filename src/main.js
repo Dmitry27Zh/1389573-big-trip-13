@@ -16,7 +16,7 @@ import Store from './api/store';
 import Provider from './api/provider';
 
 const STORE_PREFIX = `big-trip-localstorage`;
-const STORE_VER = `v8`;
+const STORE_VER = `v9`;
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const tripMainElement = document.querySelector(`.trip-main`);
@@ -37,7 +37,6 @@ const apiWithProvider = new Provider(api, store);
 filtersModel.setFilter(FilterType.EVERYTHING);
 
 const infoPresenter = new InfoPresenter(tripMainElement, pointsModel);
-infoPresenter.init();
 
 const menuComponent = new TripMenuView();
 
@@ -82,11 +81,15 @@ document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, ({
     toast(`You can't create new point offline`);
     return;
   }
+  if (statsComponent) {
+    removeElement(statsComponent);
+    tripPresenter.init();
+  }
   target.disabled = true;
   tripPresenter.createNewPoint(target);
 });
 
-/* window.addEventListener(`load`, () => {
+window.addEventListener(`load`, () => {
   navigator.serviceWorker.register(`./sw.js`);
 });
 
@@ -98,4 +101,4 @@ window.addEventListener(`online`, () => {
 window.addEventListener(`offline`, () => {
   document.title += ` [offline]`;
   toast(`Lost connection to server`);
-}); */
+});
