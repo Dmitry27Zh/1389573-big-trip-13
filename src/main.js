@@ -37,6 +37,7 @@ const apiWithProvider = new Provider(api, store);
 filtersModel.setFilter(FilterType.EVERYTHING);
 
 const infoPresenter = new InfoPresenter(tripMainElement, pointsModel);
+infoPresenter.init();
 
 const menuComponent = new TripMenuView();
 

@@ -20,6 +20,9 @@ export default class Info {
   }
 
   init() {
+    if (!this._getPoints().length) {
+      return;
+    }
     if (this._infoComponent !== null) {
       removeElement(this._infoComponent);
       removeElement(this._titleComponent);
