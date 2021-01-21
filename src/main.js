@@ -89,7 +89,7 @@ document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, ({
   tripPresenter.createNewPoint(target);
 });
 
-window.addEventListener(`load`, () => {
+/* window.addEventListener(`load`, () => {
   navigator.serviceWorker.register(`./sw.js`);
 });
 
@@ -101,4 +101,4 @@ window.addEventListener(`online`, () => {
 window.addEventListener(`offline`, () => {
   document.title += ` [offline]`;
   toast(`Lost connection to server`);
-});
+}); */

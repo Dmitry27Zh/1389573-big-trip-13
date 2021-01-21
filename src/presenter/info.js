@@ -54,7 +54,7 @@ export default class Info {
 
   _getDates() {
     const points = this._getPoints();
-    return [points[0].date.start, points[points.length - 1].date.end];
+    return [points[0] ? points[0].date.start : null, points[points.length - 1] ? points[points.length - 1].date.end : null];
   }
 
   _handleViewChange() {

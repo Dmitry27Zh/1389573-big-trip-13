@@ -64,6 +64,7 @@ export default class Provider {
 
   sync() {
     if (isOnline() && this._syncNeeded) {
+      console.log(`сунк`)
       const storePoints = Object.values(this._store.getItems());
       return this._api.sync(storePoints).then((response) => {
         const createdPoints = getSyncedPoints(response.created);

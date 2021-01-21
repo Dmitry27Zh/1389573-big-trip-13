@@ -98,7 +98,7 @@ export default class Trip {
     if (this._noPointsMessageComponent !== null) {
       removeElement(this._noPointsMessageComponent);
     }
-    if (resetCurrentSort) {
+    if (resetCurrentSort && this._sortComponent !== null) {
       removeElement(this._sortComponent);
       this._currentSortType = SortType.DAY;
     }
