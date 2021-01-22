@@ -9,10 +9,10 @@ export const getRandomItem = (collection) => {
 };
 
 export const getRandomArray = (array) => {
-  let currentArray = [...array];
+  const currentArray = [...array];
   let temporaryValue = null;
   for (let i = currentArray.length - 1; i >= 0; i--) {
-    let randomIndex = getRandomInteger(i);
+    const randomIndex = getRandomInteger(i);
     temporaryValue = currentArray[i];
     currentArray[i] = currentArray[randomIndex];
     currentArray[randomIndex] = temporaryValue;

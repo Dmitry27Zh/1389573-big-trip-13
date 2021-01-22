@@ -153,7 +153,7 @@ export default class EditPoint extends Smart {
   }
 
   static parseDataToPoint(data) {
-    let point = Object.assign({}, data);
+    const point = Object.assign({}, data);
     delete point.isDisabled;
     delete point.isSaving;
     delete point.isDeleting;
