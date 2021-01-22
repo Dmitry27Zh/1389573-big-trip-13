@@ -12,10 +12,11 @@ export default class NewPoint {
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
   }
 
-  init(offersToTypes, infoToDestinations) {
+  init(offersToTypes, infoToDestinations, initButton) {
     if (this._newPointComponent !== null) {
       return;
     }
+    this._initButton = initButton;
     this._newPointComponent = new AddPointView(offersToTypes, infoToDestinations);
     document.addEventListener(`keydown`, this._escKeydownHandler);
     this._newPointComponent.setCloseClickHandler(this._handleCloseClick);
@@ -46,6 +47,7 @@ export default class NewPoint {
   }
 
   _handleFormSubmit(addedPoint) {
+    this._initButton.disabled = false;
     this._changeData(UserAction.ADD_POINT, UpdateType.MAJOR, addedPoint);
   }
 
@@ -53,6 +55,7 @@ export default class NewPoint {
     if (this._newPointComponent === null) {
       return;
     }
+    this._initButton.disabled = false;
     removeElement(this._newPointComponent);
     this._newPointComponent = null;
     document.removeEventListener(`keydown`, this._escKeydownHandler);

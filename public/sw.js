@@ -1,5 +1,5 @@
 const CACHE_PREFIX = `big-trip-cache`;
-const CACHE_VERSION = `v8`;
+const CACHE_VERSION = `v9`;
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VERSION}`;
 
 const HTTP_STATUS_OK = 200;

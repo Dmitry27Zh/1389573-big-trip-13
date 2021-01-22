@@ -1,7 +1,7 @@
 import PointView from '../view/point';
 import EditPointView from '../view/edit-point';
 import {render, replaceElements, removeElement} from '../utils/render';
-import {isOnline} from '../utils/common';
+import {isOnline, compareObjects} from '../utils/common';
 import {toast} from '../utils/toast/toast';
 import {Mode, State, UserAction, UpdateType} from '../const';
 
@@ -108,7 +108,7 @@ export default class Point {
       toast(`You can't save point offline`);
       return;
     }
-    this._changeData(UserAction.DELETE_POINT, UpdateType.MAJOR, deletedPoint);
+    this._changeData(UserAction.DELETE_POINT, UpdateType.MINOR, deletedPoint);
   }
 
   _handleFormSubmit(editedPoint) {
@@ -117,7 +117,8 @@ export default class Point {
       return;
     }
     document.removeEventListener(`keydown`, this._escKeydownHandler);
-    this._changeData(UserAction.UPDATE_POINT, UpdateType.PATCH, editedPoint);
+    const isMinorUpdate = !compareObjects(this._point.date, editedPoint.date) || this._point.cost !== editedPoint.cost;
+    this._changeData(UserAction.UPDATE_POINT, isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH, editedPoint);
   }
 
   _handleFavoriteClick() {

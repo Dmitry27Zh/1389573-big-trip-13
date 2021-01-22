@@ -112,7 +112,7 @@ const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNew
           ${!isNewPointMode ? `<button class="event__rollup-btn" type="button" ${isDisabled ? `disabled` : ``}><span class="visually-hidden">Open event</span></button>` : ``}
         </header>
         <section class="event__details">
-            ${availableOffers ? createOffersTemplate(availableOffers, offers) : ``}
+            ${availableOffers.length ? createOffersTemplate(availableOffers, offers) : ``}
             ${info ? createDestinationInfoTemplate(info) : ``}
         </section>
       </form>
@@ -254,9 +254,13 @@ export default class EditPoint extends Smart {
 
   _setInnerHandlers() {
     this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._typeToggleClickHandler);
-    this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationToggleHandler);
     this.getElement().querySelector(`.event__input--price`).addEventListener(`change`, this._priceChangeHandler);
-    this.getElement().querySelector(`.event__available-offers`).addEventListener(`change`, this._offersChangeHandler);
+    if (Object.keys(this._infoToDestinations).length) {
+      this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationToggleHandler);
+    }
+    if (this._offersToTypes[this._data.type].length) {
+      this.getElement().querySelector(`.event__available-offers`).addEventListener(`change`, this._offersChangeHandler);
+    }
   }
 
   _deleteClickHandler(evt) {

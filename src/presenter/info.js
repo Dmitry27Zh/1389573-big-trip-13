@@ -4,6 +4,8 @@ import TripDatesView from '../view/trip-dates';
 import TripCostView from '../view/trip-cost';
 import {RenderPositions} from '../const';
 import {render, removeElement} from '../utils/render';
+import {sortByDay} from '../utils/sort';
+import {getUniqueItems} from '../utils/common';
 
 export default class Info {
   constructor(container, pointsModel) {
@@ -18,6 +20,9 @@ export default class Info {
   }
 
   init() {
+    if (!this._getPoints().length) {
+      return;
+    }
     if (this._infoComponent !== null) {
       removeElement(this._infoComponent);
       removeElement(this._titleComponent);
@@ -25,8 +30,8 @@ export default class Info {
       removeElement(this._costComponent);
     }
     this._infoComponent = new TripInfoView();
-    this._titleComponent = new TripTitleView();
-    this._datesComponent = new TripDatesView();
+    this._titleComponent = new TripTitleView(this._getDestinations());
+    this._datesComponent = new TripDatesView(this._getDates());
     this._costComponent = new TripCostView(this._getTotalCost());
     render(this._container, this._infoComponent, RenderPositions.AFTERBEGIN);
     this._innerContainerElement = this._infoComponent.getElement().querySelector(`.trip-info__main`);
@@ -35,10 +40,24 @@ export default class Info {
     render(this._infoComponent, this._costComponent);
   }
 
+  _getPoints() {
+    return this._pointsModel.getPoints().sort(sortByDay);
+  }
+
   _getTotalCost() {
-    return this._pointsModel.getPoints().reduce((totalCost, point) => {
-      return totalCost + point.cost;
+    return this._getPoints().reduce((totalCost, point) => {
+      return totalCost + point.cost + point.offers.reduce((offersCost, offer) => offersCost + offer.price, 0);
     }, 0);
+  }
+
+  _getDestinations() {
+    const allDestinations = this._getPoints().map(({destination: {name}}) => name);
+    return getUniqueItems(allDestinations);
+  }
+
+  _getDates() {
+    const points = this._getPoints();
+    return [points[0] ? points[0].date.start : null, points[points.length - 1] ? points[points.length - 1].date.end : null];
   }
 
   _handleViewChange() {

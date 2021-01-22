@@ -57,7 +57,7 @@ export default class Trip {
     if (this._sortComponent !== null) {
       removeElement(this._sortComponent);
     }
-    this._sortComponent = new SortView();
+    this._sortComponent = new SortView(this._currentSortType);
     render(this._eventsContainer, this._sortComponent, RenderPositions.AFTERBEGIN);
     this._sortComponent.setSortClickHandler(this._handleSortChange);
   }
@@ -83,10 +83,10 @@ export default class Trip {
     render(this._eventsListComponent, this._noPointsMessageComponent);
   }
 
-  createNewPoint() {
+  createNewPoint(initButton) {
     this._currentSortType = SortType.DAY;
     this._filtersModel.changeFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._newPointPresenter.init(this._offersToTypes, this._infoToDestinations);
+    this._newPointPresenter.init(this._offersToTypes, this._infoToDestinations, initButton);
   }
 
   _clearPointsList({resetCurrentSort = false} = {}) {
@@ -98,10 +98,17 @@ export default class Trip {
     if (this._noPointsMessageComponent !== null) {
       removeElement(this._noPointsMessageComponent);
     }
-    if (resetCurrentSort) {
+    if (resetCurrentSort && this._sortComponent !== null) {
       removeElement(this._sortComponent);
       this._currentSortType = SortType.DAY;
     }
+  }
+
+  destroy() {
+    this._clearPointsList({resetCurrentSort: true});
+    removeElement(this._eventsListComponent);
+    this._pointsModel.removeObserver(this._handleViewChange);
+    this._filtersModel.removeObserver(this._handleViewChange);
   }
 
   _renderEventsList() {
