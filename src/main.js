@@ -43,7 +43,7 @@ const menuComponent = new TripMenuView();
 
 render(tripControlsElement, menuComponent);
 
-const filtersPresenter = new FiltersPresenter(tripControlsElement, filtersModel);
+const filtersPresenter = new FiltersPresenter(tripControlsElement, filtersModel, pointsModel);
 filtersPresenter.init();
 
 const tripPresenter = new TripPresenter(tripEventsElement, destinationsModel, offersModel, pointsModel, filtersModel, apiWithProvider);
@@ -84,6 +84,7 @@ document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, ({
   }
   if (statsComponent) {
     removeElement(statsComponent);
+    menuComponent.setActiveItem(MenuItem.TABLE);
     tripPresenter.init();
   }
   target.disabled = true;

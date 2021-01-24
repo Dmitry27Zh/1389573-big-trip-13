@@ -58,7 +58,7 @@ const createDestinationInfoTemplate = (info) => {
 const createEditPointTemplate = (offersToTypes, infoToDestinations, point, isNewPointMode) => {
   const {type, destination, date: {start, end}, cost, offers, isDisabled, isSaving, isDeleting} = point;
   const {name: destinationName} = destination;
-  const availableOffers = offersToTypes[type];
+  const availableOffers = Array.isArray(offersToTypes[type]) ? offersToTypes[type] : [];
   const availableDestinations = Object.keys(infoToDestinations);
   const allTypes = Object.keys(offersToTypes);
   const info = infoToDestinations[destinationName];
@@ -258,8 +258,10 @@ export default class EditPoint extends Smart {
     if (Object.keys(this._infoToDestinations).length) {
       this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationToggleHandler);
     }
-    if (this._offersToTypes[this._data.type].length) {
-      this.getElement().querySelector(`.event__available-offers`).addEventListener(`change`, this._offersChangeHandler);
+    if (Object.keys(this._offersToTypes).length) {
+      if (this._offersToTypes[this._data.type].length) {
+        this.getElement().querySelector(`.event__available-offers`).addEventListener(`change`, this._offersChangeHandler);
+      }
     }
   }
 
